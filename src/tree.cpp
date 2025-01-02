@@ -586,10 +586,9 @@ void Tree::regress() {
   auto* H = hessian;
   auto* R = residual;
   const bool is_weighted_update = config->model_use_weighted_update;
-
   for (int i = 0; i < nodes.size(); ++i) {
-    if (nodes[i].idx >= 0 && nodes[i].is_leaf) {
-      leaf_ids.push_back(i);
+    if (nodes[i].idx >= 0 ) {
+      if(nodes[i].is_leaf) leaf_ids.push_back(i);
       double numerator = 0.0, denominator = 0.0;
       uint start = nodes[i].start, end = nodes[i].end;
       CONDITION_OMP_PARALLEL_FOR(
