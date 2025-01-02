@@ -808,6 +808,57 @@ void Tree::trySplit(int x, int sib) {
     nodes[x].split_v = best_info.split_v;
 }
 
+  /**
+   * Get the leaf index for a given test sample index.
+   * @param[in] test_idx: Index of the test sample in the dataset.
+   * @return Index of the leaf node where the test sample falls.
+   */
+  int Tree::getLeafIndex(int test_idx) {
+      int node_index = 0; // Start at the root node
+      while (true) {
+          // If it's a leaf node, return its index
+          if (nodes[node_index].is_leaf) {
+              return node_index;
+          } else { // Traverse to the left or right child based on the split condition
+              // Access feature values using test_idx
+              ushort feature_value = data->Xv[nodes[node_index].split_fi][test_idx];
+              node_index = feature_value <= nodes[node_index].split_v
+                              ? nodes[node_index].left
+                              : nodes[node_index].right;
+          }
+      }
+  }
+
+  /**
+   * Compute the derivative of the leaf value θ_{t,l} with respect to w_i.
+   * @param[in] train_idx: Index of the training sample.
+   * @param[in] test_idx: Index of the test sample.
+   * @return The computed derivative ∂θ_{t,l}/∂w_i.
+  */
+  double Tree::computeThetaDerivative(int train_idx, int test_idx) {
+    // Get leaf index for the test sample
+    int leaf_idx = this->getLeafIndex(test_idx);
+
+    // Access the gradient, hessian, and leaf value for the training sample
+    double g_t_i = this->residual[train_idx];
+    double h_t_i = this->hessian[train_idx];
+    double theta_t_l = this->nodes[leaf_idx].predict_v;
+
+    // Compute ∑_{j ∈ I_{t,l}} h_{t,j} + λ
+    double sum_h_t_j = 0.0;
+    for (uint i = this->nodes[leaf_idx].start; i < this->nodes[leaf_idx].end; ++i) {
+        sum_h_t_j += this->hessian[this->ids[i]];
+    }
+    sum_h_t_j += this->config->tree_damping_factor; // Regularization term λ
+
+    // Compute the derivative ∂θ_{t,l}/∂w_i
+    double derivative = (g_t_i + h_t_i * theta_t_l) / sum_h_t_j;
+
+    return derivative;
+  }
+
+
+
 /**
  * Calculate the Lowest Common Ancestor (LCA) of two nodes.
  * @param[in] node1: Index of the first node

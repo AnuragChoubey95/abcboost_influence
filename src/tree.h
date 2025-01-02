@@ -138,9 +138,9 @@ class Tree {
   inline void alignHessianResidual(const uint start, const uint end);
   inline void initUnobserved(const uint start,const uint end,double& r_unobserved, double& h_unobserved);
 
-   
+  int getLeafIndex(int test_idx); //<<++MY CHANGE
+  double computeThetaDerivative(int train_idx, int test_idx); //<<++MY CHANGE
   int findLCA(int node1, int node2);  //<<++MY CHANGE
-
   double calculateDepthWeight(int node_idx); //<<++MY CHANGE
 
 
