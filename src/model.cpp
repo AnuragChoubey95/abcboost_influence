@@ -282,6 +282,11 @@ void GradientBoosting::init() {
   R_tmp.resize(data->n_data);
   H_tmp.resize(data->n_data);
   ids_tmp.resize(data->n_data);
+
+  intermediate_predictions = std::vector<std::vector<double>>( //<++ MY CHANGE
+      config->model_n_iterations,
+      std::vector<double>(data->n_data, 0.0));
+
 }
 
 /**
@@ -875,6 +880,19 @@ double Regression::getLSLoss() {
   }
   return loss / data->n_data;
 }
+
+/**
+ * Compute the partial derivative of LS loss for a single data instance.
+ * @param[in] instance_id: Index of the data instance.
+ * @return Partial derivative of the LS loss with respect to the predicted value.
+ */
+double Regression::getLSLossDerivative(int instance_id) { //<<++ MY CHANGE
+  if (instance_id < 0 || instance_id >= data->n_data) {
+    throw std::out_of_range("Invalid instance_id: out of range.");
+  }
+  return 2.0 * (F[0][instance_id] - data->Y[instance_id]);
+}
+
 
 double Regression::getL1Loss() {
   double loss = 0.0;

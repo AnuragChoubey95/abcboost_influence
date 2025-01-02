@@ -49,6 +49,14 @@ class Tree {
     uint split_fi;
     double gain, predict_v;
     int split_v;
+    int depth; // depth of node within tree //<<++MY CHANGE
+
+    // New attributes for gain calculation
+
+    // Sum of residuals in the node.
+    double sum;  
+    // Sum of hessians in the node.       
+    double weights;     
 
     TreeNode();
 
@@ -81,6 +89,10 @@ class Tree {
   Data *data;
 
   std::vector<bool> in_leaf;
+
+  int treeDepth; // Total tree depth
+  double exp_sum; // Normalization term for depth weights
+
 
   Tree(Data *data, Config *config);
   ~Tree();
@@ -125,6 +137,13 @@ class Tree {
 
   inline void alignHessianResidual(const uint start, const uint end);
   inline void initUnobserved(const uint start,const uint end,double& r_unobserved, double& h_unobserved);
+
+   
+  int findLCA(int node1, int node2);  //<<++MY CHANGE
+
+  double calculateDepthWeight(int node_idx); //<<++MY CHANGE
+
+
 
   template<bool val>
   inline void setInLeaf(uint start,uint end){

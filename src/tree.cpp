@@ -78,6 +78,8 @@ Tree::TreeNode::TreeNode() {
   is_leaf = true;
   idx = left = right = parent = -1;
   gain = predict_v = -1;
+
+  sum = weights = 0.0;
 }
 
 
@@ -291,6 +293,7 @@ void Tree::buildTree(std::vector<uint> *ids, std::vector<uint> *fids) {
   uint lsz, rsz, msz = config->tree_min_node_size;
 
   const int n_iter = n_leaves - 1;
+  treeDepth = 0;
   for (int i = 0; i < n_iter; ++i) {
     // find the node with max gain to split (calculated in trySplit)
     int idx = -1;
@@ -308,6 +311,13 @@ void Tree::buildTree(std::vector<uint> *ids, std::vector<uint> *fids) {
       break;
     }
     split(idx, l);
+    // Calculate the depth of the new nodes
+    nodes[l].depth = nodes[idx].depth + 1;
+    nodes[r].depth = nodes[idx].depth + 1;
+
+    // Update the maximum tree depth
+    treeDepth = std::max(treeDepth, nodes[l].depth);
+    treeDepth = std::max(treeDepth, nodes[r].depth);
     lsz = nodes[l].end - nodes[l].start, rsz = nodes[r].end - nodes[r].start;
 
     if (lsz < msz && rsz < msz) {
@@ -596,6 +606,8 @@ void Tree::regress() {
                                 (denominator + config->tree_damping_factor),
                             lower),
                    upper);
+      nodes[i].sum = numerator; //<<++MY CHANGE
+      nodes[i].weights = denominator; //<<++MY CHANGE
     }
   }
 }
@@ -734,36 +746,116 @@ void Tree::split(int x, int l) {
  * @post gain, split_fi, and split_v are stored for node[x].
  */
 void Tree::trySplit(int x, int sib) {
-  binSort(x, sib);
+    binSort(x, sib);
 
-  if ((nodes[x].end - nodes[x].start) < config->tree_min_node_size) return;
-  SplitInfo best_info;
+    // Check if node size is below the minimum threshold
+    if ((nodes[x].end - nodes[x].start) < config->tree_min_node_size) return;
 
-  best_info.gain = -1;
-  std::vector<std::pair<double,int>> gains(fids->size());
-  
-  CONDITION_OMP_PARALLEL_FOR(
-    omp parallel for schedule(guided),
-    config->use_omp == true,
-    for (int j = 0; j < fids->size(); ++j) {
+    SplitInfo best_info;
+    best_info.gain = -1;
+
+    // Prepare to calculate gain for all features
+    std::vector<std::pair<double, int>> gains(fids->size());
+    std::vector<std::pair<double, double>> best_sums_and_weights(fids->size()); // Store sums and weights for each feature
+
+    CONDITION_OMP_PARALLEL_FOR(
+        omp parallel for schedule(guided),
+        config->use_omp == true,
+        for (int j = 0; j < fids->size(); ++j) {
+            int fid = (data->valid_fi)[(*fids)[j]];
+            auto gain_info = featureGain(x, fid); 
+            gains[j] = gain_info;
+
+            // Compute sums and weights for the best split of the current feature
+            if (gain_info.first > 0) {
+                auto &b_csw = (*hist)[x][fid]; // Histogram for this feature
+                hist_t l_sum = 0, l_weight = 0, r_sum = 0, r_weight = 0; //<<++MY CHANGE
+
+                // Traverse bins and compute left/right sums and weights
+                for (int k = 0; k < b_csw.size(); ++k) {
+                    if (k <= gain_info.second) { 
+                        l_sum += b_csw[k].sum;
+                        l_weight += b_csw[k].weight;
+                    } else { 
+                        r_sum += b_csw[k].sum; //<<++MY CHANGE
+                        r_weight += b_csw[k].weight; //<<++MY CHANGE
+                    }
+                }
+                best_sums_and_weights[j] = {l_sum + r_sum, l_weight + r_weight}; //<<++MY CHANGE
+            }
+        }
+    )
+
+    // Find the feature with the maximum gain
+    for (int j = 0; j < gains.size(); ++j) {
+        const auto &info = gains[j];
         int fid = (data->valid_fi)[(*fids)[j]];
-        gains[j] = featureGain(x, fid);
-    }
-  )
-  for(int j = 0;j < gains.size();++j){
-    const auto& info = gains[j];
-    int fid = (data->valid_fi)[(*fids)[j]];
-    if (info.first > best_info.gain) {
-      best_info.gain = info.first;
-      best_info.split_fi = fid;
-      best_info.split_v = info.second;
-    }
-  }
+        if (info.first > best_info.gain) {
+            best_info.gain = info.first;
+            best_info.split_fi = fid;
+            best_info.split_v = info.second;
 
-  if (best_info.gain < 0) return;
-  nodes[x].gain = best_info.gain;
-  nodes[x].split_fi = best_info.split_fi;
-  nodes[x].split_v = best_info.split_v;
+            // // Update the node's sum and weights with the values from the best split
+            nodes[x].sum = best_sums_and_weights[j].first; //<<++MY CHANGE
+            nodes[x].weights = best_sums_and_weights[j].second; //<<++MY CHANGE
+        } 
+    }
+    // std::cout << nodes[x].sum << " " << nodes[x].weights << std::endl;
+
+    // Update node information
+    if (best_info.gain < 0) return;
+    nodes[x].gain = best_info.gain;
+    nodes[x].split_fi = best_info.split_fi;
+    nodes[x].split_v = best_info.split_v;
 }
+
+/**
+ * Calculate the Lowest Common Ancestor (LCA) of two nodes.
+ * @param[in] node1: Index of the first node
+ * @param[in] node2: Index of the second node
+ * @return Index of the LCA node
+ */
+int Tree::findLCA(int node1, int node2) { //<<++MY CHANGE
+    // Check for valid node indices 
+    if (node1 < 0 || node2 < 0 || node1 >= nodes.size() || node2 >= nodes.size()) {
+        fprintf(stderr, "[Error] Invalid node indices provided for LCA.\n");
+        return -1;
+    }
+
+    // Step 1: Trace the path to the root for node1
+    std::unordered_set<int> ancestors;
+    int current = node1;
+    while (current != -1) {  // Root node has parent == -1
+        ancestors.insert(current);
+        current = nodes[current].parent;
+    }
+
+    // Step 2: Trace the path to the root for node2 and find the first common ancestor
+    current = node2;
+    while (current != -1) {
+        if (ancestors.count(current)) {
+            return current;  // Found the LCA
+        }
+        current = nodes[current].parent;
+    }
+
+    return -1;  // LCA not found (should not happen if the tree is valid)
+}
+
+/**
+ * Calculate the depth weight of a node.
+ * @param[in] node_idx: Index of the node
+ * @return Depth weight of the node
+ */
+double Tree::calculateDepthWeight(int node_idx) { //<<++MY CHANGE
+    if (node_idx < 0 || node_idx >= nodes.size()) {
+        fprintf(stderr, "[Error] Invalid node index provided.\n");
+        return 0.0;
+    }
+
+    int depth = nodes[node_idx].depth; // Precomputed node depth
+    return std::exp(depth) / exp_sum;
+}
+
 
 }  // namespace ABCBoost

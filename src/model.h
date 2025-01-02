@@ -55,11 +55,12 @@ class GradientBoosting {
   // [n_nodes, n_feats, :] of (count, sum, weight)
   std::vector<std::vector<std::vector<HistBin>>> hist;
   std::vector<std::vector<std::unique_ptr<Tree>>> additive_trees;
-  std::vector<std::vector<double>> F;//, hessians, residuals;
+  std::vector<std::vector<double>> F;//, hessians, residuals; << Don't undertand the comment?!
 	std::vector<double> hessians,residuals;
   std::vector<double> feature_importance;
   std::vector<unsigned int> ids, fids;
   std::string experiment_path;
+  std::vector<std::vector<double>> intermediate_predictions; //<++ MY CHANGE
 
   Config* config;
   Data* data;
@@ -135,6 +136,7 @@ class Regression : public GradientBoosting {
 	virtual void print_train_message(int iter,double loss,double iter_time);
   void computeHessianResidual();
   double getLSLoss();
+  double getLSLossDerivative(int instance_id); //<<++ MY CHANGE
   double getL1Loss();
   double getLpLoss(const double p);
   double getHuberLoss();
