@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
   model->loadModel();
   model->setupExperiment();
 
-  model->test();
+  model->test(); //Can attempt influence calculation directly in test(). Ask Prof. Zhao
   model->savePrediction();
   return 0;
 }

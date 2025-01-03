@@ -844,7 +844,7 @@ void Tree::trySplit(int x, int sib) {
     double h_t_i = this->hessian[train_idx];
     double theta_t_l = this->nodes[leaf_idx].predict_v;
 
-    // Compute ∑_{j ∈ I_{t,l}} h_{t,j} + λ
+    // Compute ∑_{j  ∈ I_{t,l}} h_{t,j} + λ
     double sum_h_t_j = 0.0;
     for (uint i = this->nodes[leaf_idx].start; i < this->nodes[leaf_idx].end; ++i) {
         sum_h_t_j += this->hessian[this->ids[i]];

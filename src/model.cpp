@@ -759,6 +759,9 @@ void Regression::test() {
       std::vector<double> updates = additive_trees[m][0]->predictAll(data);
       for (int i = 0; i < data->n_data; i++) {
         F[0][i] += config->model_shrinkage * updates[i];
+
+        // Populate intermediate_predictions matrix
+        intermediate_predictions[m][i] = F[0][i]; //<<++ MY CHANGE
       }
     }
     if (config->model_mode == "test_rank") {
@@ -868,6 +871,41 @@ void Regression::computeHessianResidual() {
     }
   }
 }
+
+  /**
+   * Method to calculate BoostIn influence for L2 loss.
+   * @param train_index Index of the training sample.
+   * @param test_index Index of the test sample.
+   * @return BoostIn influence value for the given indices.
+   */
+  double Regression::calculateBoostInInfluence(int train_index, int test_index) {
+      double boostInInfluence = 0.0;
+
+      // Loop over all iterations
+      for (int t = 0; t < config->model_n_iterations; ++t) {
+          // Get leaf index for the training and test samples in the current iteration
+          int train_leaf_index = additive_trees[t][0]->getLeafIndex(train_index);
+          int test_leaf_index = additive_trees[t][0]->getLeafIndex(test_index);
+
+          // Check if both samples are in the same leaf (INDICATOR FUNCTION)
+          if (train_leaf_index != test_leaf_index) {
+              continue;
+          }
+
+          // Compute partial derivatives and intermediate terms
+          double prediction_test = intermediate_predictions[t][test_index]; //NEED INTERMEDIATE PREDICTIONS. DONE (12:28 pm 3rd Jan)
+          double residual_test = prediction_test - data->Y[test_index];
+          double dL_dy_hat = 2.0 * residual_test;  // Partial derivative of L2 loss w.r.t. prediction
+          double dTheta_dWi = additive_trees[t][0]->computeThetaDerivative(train_leaf_index, test_leaf_index); // ∂θ_t,l/∂w_i
+          double eta = config->model_shrinkage; // Learning rate
+
+          // Update the BoostIn influence sum
+          boostInInfluence += dL_dy_hat * eta * dTheta_dWi;
+      }
+
+      return boostInInfluence;
+}
+
 
 /**
  * Helper method to compute least squares loss on current probabilities.
