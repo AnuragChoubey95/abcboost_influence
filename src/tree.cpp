@@ -78,8 +78,8 @@ Tree::TreeNode::TreeNode() {
   is_leaf = true;
   idx = left = right = parent = -1;
   gain = predict_v = -1;
-
   sum = weights = 0.0;
+  depth = -1;
 }
 
 
@@ -470,6 +470,8 @@ void Tree::init(
   this->ids_tmp = ids_tmp;
   this->H_tmp = H_tmp;
   this->R_tmp = R_tmp;
+  // Resize the sample_leaf_indices vector to the number of training samples
+  sample_leaf_indices.resize(data->n_data, -1);
 }
 
 /**
@@ -495,6 +497,10 @@ void Tree::populateTree(FILE *fileptr) {
     ret += fread(&node.split_fi, sizeof(node.split_fi), 1, fileptr);
     ret += fread(&node.split_v, sizeof(node.split_v), 1, fileptr);
     ret += fread(&node.predict_v, sizeof(node.predict_v), 1, fileptr);
+    ret += fread(&node.depth, sizeof(node.depth), 1, fileptr);
+    ret += fread(&node.sum, sizeof(node.sum), 1, fileptr);
+    ret += fread(&node.weights, sizeof(node.weights), 1, fileptr);
+
 
     // check whether a leaf
     if (node.idx < 0) {
@@ -508,6 +514,13 @@ void Tree::populateTree(FILE *fileptr) {
 
     nodes[n] = node;
   }
+  // Load the size of sample_leaf_indices
+  int sample_leaf_indices_size = 0;
+  ret += fread(&sample_leaf_indices_size, sizeof(sample_leaf_indices_size), 1, fileptr);
+
+  // Resize and load the contents of sample_leaf_indices
+  sample_leaf_indices.resize(sample_leaf_indices_size);
+  ret += fread(sample_leaf_indices.data(), sizeof(int), sample_leaf_indices_size, fileptr);
 }
 
 /**
@@ -548,6 +561,7 @@ std::vector<double> Tree::predictAll(Data *data) {
   nodes[0].start = 0;
   nodes[0].end = n_test;
 
+  test_sample_leaf_indices.resize(data->n_data); //<<++ MY CHANGE
   std::vector<double> result(n_test, 0.0);
 
   for (int i = 0; i < nodes.size(); ++i) {
@@ -561,17 +575,20 @@ std::vector<double> Tree::predictAll(Data *data) {
   for (auto lfid : leaf_ids) {
     int start = nodes[lfid].start, end = nodes[lfid].end;
     CONDITION_OMP_PARALLEL_FOR(
-      omp parallel for schedule(static, 1),
-      config->use_omp == true,
-      for (int i = start; i < end; ++i)
-        result[this->ids[i]] = nodes[lfid].predict_v;
+        omp parallel for schedule(static, 1),
+        config->use_omp == true,
+        for (int i = start; i < end; ++i) { 
+            result[this->ids[i]] = nodes[lfid].predict_v;
+            this->test_sample_leaf_indices[this->ids[i]] = lfid; // Assign leaf index for each sample
+        }
     )
-  }
+}
 
   freeMemory();
 
   return result;
 }
+// 88,0.00054200542,0,0.16602067,0.037462349,0.017250872,0.019880716,0.02014775,0.016952775,0.023687799,0.058939096,0.22909881,0.14493308,0.14664511,0.00094526893,0.60481586,0.30142511,0.021560347,0.11840563,0.00070871722,0.0062646174,0.50460796
 
 /**
  * Update region values for leaves.
@@ -598,6 +615,7 @@ void Tree::regress() {
           auto id = ids[d];
           numerator += R[id];
           denominator += H[id];
+          sample_leaf_indices[id] = i; // Assign leaf index to the sample
         }
       )
       nodes[i].predict_v =
@@ -605,8 +623,8 @@ void Tree::regress() {
                                 (denominator + config->tree_damping_factor),
                             lower),
                    upper);
-      nodes[i].sum = numerator; //<<++MY CHANGE
-      nodes[i].weights = denominator; //<<++MY CHANGE
+      nodes[i].sum = numerator; 
+      nodes[i].weights = denominator; 
     }
   }
 }
@@ -626,7 +644,16 @@ void Tree::saveTree(FILE *fp) {
     fwrite(&node.split_fi, sizeof(node.split_fi), 1, fp);
     fwrite(&node.split_v, sizeof(node.split_v), 1, fp);
     fwrite(&node.predict_v, sizeof(node.predict_v), 1, fp);
+    fwrite(&node.depth, sizeof(node.depth), 1, fp);
+    fwrite(&node.sum, sizeof(node.sum), 1, fp);
+    fwrite(&node.weights, sizeof(node.weights), 1, fp);
   }
+  // Save the size of sample_leaf_indices
+  int sample_leaf_indices_size = sample_leaf_indices.size();
+  fwrite(&sample_leaf_indices_size, sizeof(sample_leaf_indices_size), 1, fp);
+
+  // Save the contents of sample_leaf_indices
+  fwrite(sample_leaf_indices.data(), sizeof(int), sample_leaf_indices_size, fp);
 }
 
 /**
@@ -809,19 +836,19 @@ void Tree::trySplit(int x, int sib) {
 }
 
   /**
-   * Get the leaf index for a given test sample index.
-   * @param[in] test_idx: Index of the test sample in the dataset.
-   * @return Index of the leaf node where the test sample falls.
+   * Get the leaf index for a given sample index.
+   * @param[in] test_idx: Index of the sample in the dataset.
+   * @return Index of the leaf node where the sample falls.
    */
-  int Tree::getLeafIndex(int test_idx) {
+  int Tree::getLeafIndex(int idx) {
       int node_index = 0; // Start at the root node
       while (true) {
           // If it's a leaf node, return its index
           if (nodes[node_index].is_leaf) {
               return node_index;
           } else { // Traverse to the left or right child based on the split condition
-              // Access feature values using test_idx
-              ushort feature_value = data->Xv[nodes[node_index].split_fi][test_idx];
+              // Access feature values using idx
+              ushort feature_value = data->Xv[nodes[node_index].split_fi][idx];
               node_index = feature_value <= nodes[node_index].split_v
                               ? nodes[node_index].left
                               : nodes[node_index].right;
@@ -837,24 +864,27 @@ void Tree::trySplit(int x, int sib) {
   */
   double Tree::computeThetaDerivative(int train_idx, int test_idx) {
     // Get leaf index for the test sample
-    int leaf_idx = this->getLeafIndex(test_idx);
+    int leaf_idx = getLeafIndex(test_idx);
 
     // Access the gradient, hessian, and leaf value for the training sample
-    double g_t_i = this->residual[train_idx];
-    double h_t_i = this->hessian[train_idx];
-    double theta_t_l = this->nodes[leaf_idx].predict_v;
+    double g_t_i = residual[train_idx];
+    double h_t_i = hessian[train_idx];
+    double theta_t_l = nodes[leaf_idx].predict_v;
 
     // Compute ∑_{j  ∈ I_{t,l}} h_{t,j} + λ
     double sum_h_t_j = 0.0;
-    for (uint i = this->nodes[leaf_idx].start; i < this->nodes[leaf_idx].end; ++i) {
-        sum_h_t_j += this->hessian[this->ids[i]];
+    for (uint i = nodes[leaf_idx].start; i < nodes[leaf_idx].end; ++i) {
+        sum_h_t_j += hessian[ids[i]];
     }
-    sum_h_t_j += this->config->tree_damping_factor; // Regularization term λ
+    sum_h_t_j += config->tree_damping_factor; // Regularization term λ
 
     // Compute the derivative ∂θ_{t,l}/∂w_i
     double derivative = (g_t_i + h_t_i * theta_t_l) / sum_h_t_j;
 
     return derivative;
+
+    //START WITH THIS METHOD, Change this method and boostin method based on 
+    // data structures that precompute leaf indices
   }
 
 

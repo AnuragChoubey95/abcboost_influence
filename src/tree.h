@@ -50,13 +50,9 @@ class Tree {
     double gain, predict_v;
     int split_v;
     int depth; // depth of node within tree //<<++MY CHANGE
-
     // New attributes for gain calculation
-
-    // Sum of residuals in the node.
-    double sum;  
-    // Sum of hessians in the node.       
-    double weights;     
+    double sum; // Sum of residuals in the node.
+    double weights; // Sum of hessians in the node.
 
     TreeNode();
 
@@ -84,14 +80,17 @@ class Tree {
   std::vector<TreeNode> nodes;
   bool is_weighted;
   int n_leaves, n_threads;
+  std::vector<int> sample_leaf_indices; //leaf idx of each training sample
+  std::vector<int> test_sample_leaf_indices; //leaf idx of each training sample
+  int treeDepth; // Total tree depth
+  double exp_sum; // Normalization term for depth weights
 
   Config *config;
   Data *data;
 
   std::vector<bool> in_leaf;
 
-  int treeDepth; // Total tree depth
-  double exp_sum; // Normalization term for depth weights
+  
 
 
   Tree(Data *data, Config *config);

@@ -756,9 +756,17 @@ void Regression::test() {
     if (additive_trees[m][0] != NULL) {
       additive_trees[m][0]->init(nullptr, &buffer[0], &buffer[1], nullptr,
                                  nullptr, nullptr,ids_tmp.data(),H_tmp.data(),R_tmp.data());
+      
       std::vector<double> updates = additive_trees[m][0]->predictAll(data);
+
       for (int i = 0; i < data->n_data; i++) {
+        // updates has leaf idx for all test samples
         F[0][i] += config->model_shrinkage * updates[i];
+
+        /*
+          We can use idx i (as test sample idx) to call calculateBoostInInfluence
+        */
+       
 
         // Populate intermediate_predictions matrix
         intermediate_predictions[m][i] = F[0][i]; //<<++ MY CHANGE
@@ -775,6 +783,40 @@ void Regression::test() {
       }
     }
   }
+}
+
+/**
+   * Method to calculate BoostIn influence for L2 loss.
+   * @param train_index Index of the training sample.
+   * @param test_index Index of the test sample.
+   * @return BoostIn influence value for the given indices.
+   */
+  double Regression::calculateBoostInInfluence(int train_index, int test_index) {
+      double boostInInfluence = 0.0;
+
+      // Loop over all iterations
+      for (int t = 0; t < config->model_n_iterations; ++t) {
+          // Get leaf index for the training and test samples in current iteration
+          int train_leaf_index = additive_trees[t][0]->sample_leaf_indices[train_index];
+          int test_leaf_index = additive_trees[t][0]->getLeafIndex(test_index);
+
+          // Check if both samples are in the same leaf (INDICATOR FUNCTION)
+          if (train_leaf_index != test_leaf_index) {
+              continue;
+          }
+
+          // Compute partial derivatives and intermediate terms
+          double prediction_test = intermediate_predictions[t][test_index]; //NEED INTERMEDIATE PREDICTIONS. DONE (12:28 pm 3rd Jan)
+          double residual_test = prediction_test - data->Y[test_index];
+          double dL_dy_hat = 2.0 * residual_test;  // Partial derivative of L2 loss w.r.t. prediction
+          double dTheta_dWi = additive_trees[t][0]->computeThetaDerivative(train_leaf_index, test_leaf_index); // ∂θ_t,l/∂w_i
+          double eta = config->model_shrinkage; // Learning rate
+
+          // Update the BoostIn influence sum
+          boostInInfluence += dL_dy_hat * eta * dTheta_dWi;
+      }
+
+      return boostInInfluence;
 }
 
 /**
@@ -834,7 +876,7 @@ void Regression::train() {
  * @param k : the current class
  */
 void Regression::computeHessianResidual() {
-  if (config->regression_l1_loss){
+  if (config->regression_l1_loss){  
     #pragma omp parallel for schedule(static)
     for (int i = 0; i < data->n_data; i++) {
       residuals[i] = (F[0][i] - data->Y[i]) > 0 ? -1.0 : 1.0;
@@ -871,41 +913,6 @@ void Regression::computeHessianResidual() {
     }
   }
 }
-
-  /**
-   * Method to calculate BoostIn influence for L2 loss.
-   * @param train_index Index of the training sample.
-   * @param test_index Index of the test sample.
-   * @return BoostIn influence value for the given indices.
-   */
-  double Regression::calculateBoostInInfluence(int train_index, int test_index) {
-      double boostInInfluence = 0.0;
-
-      // Loop over all iterations
-      for (int t = 0; t < config->model_n_iterations; ++t) {
-          // Get leaf index for the training and test samples in the current iteration
-          int train_leaf_index = additive_trees[t][0]->getLeafIndex(train_index);
-          int test_leaf_index = additive_trees[t][0]->getLeafIndex(test_index);
-
-          // Check if both samples are in the same leaf (INDICATOR FUNCTION)
-          if (train_leaf_index != test_leaf_index) {
-              continue;
-          }
-
-          // Compute partial derivatives and intermediate terms
-          double prediction_test = intermediate_predictions[t][test_index]; //NEED INTERMEDIATE PREDICTIONS. DONE (12:28 pm 3rd Jan)
-          double residual_test = prediction_test - data->Y[test_index];
-          double dL_dy_hat = 2.0 * residual_test;  // Partial derivative of L2 loss w.r.t. prediction
-          double dTheta_dWi = additive_trees[t][0]->computeThetaDerivative(train_leaf_index, test_leaf_index); // ∂θ_t,l/∂w_i
-          double eta = config->model_shrinkage; // Learning rate
-
-          // Update the BoostIn influence sum
-          boostInInfluence += dL_dy_hat * eta * dTheta_dWi;
-      }
-
-      return boostInInfluence;
-}
-
 
 /**
  * Helper method to compute least squares loss on current probabilities.
@@ -1129,7 +1136,7 @@ double BinaryMart::getLoss() {
 }
 
 void BinaryMart::train() {
-  // set up buffers for OpenMP
+  // set up buffers for OpenMP  
   std::vector<std::vector<std::vector<unsigned int>>> buffer =
       GradientBoosting::initBuffer();
 
@@ -1360,7 +1367,7 @@ void GradientBoosting::serializeTrees(FILE *fp, int M) {
     }
 }
 
-void GradientBoosting::deserializeTrees(FILE *fp) {
+void GradientBoosting:: deserializeTrees(FILE *fp) {
   int M = Utils::deserialize<int>(fp);
   int K = Utils::deserialize<int>(fp);
 
