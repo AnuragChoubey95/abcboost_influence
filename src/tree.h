@@ -49,10 +49,10 @@ class Tree {
     uint split_fi;
     double gain, predict_v;
     int split_v;
+
+    double sum_residuals; // Sum of residuals in this node //<<++MY CHANGE
+    double sum_hessians ;  // Sum of hessians in this node //<<++MY CHANGE
     int depth; // depth of node within tree //<<++MY CHANGE
-    // New attributes for gain calculation
-    double sum; // Sum of residuals in the node.
-    double weights; // Sum of hessians in the node.
 
     TreeNode();
 
@@ -64,7 +64,7 @@ class Tree {
   std::vector<std::vector<std::vector<HistBin>>> *hist;
   std::vector<std::vector<uint>> *l_buffer, *r_buffer;
   std::vector<double> *feature_importance;
-  double *hessian, *residual;
+  double *hessian, *residual; //NEED TO SAVE FOR EACH TREE IN TRAINED MODEL <<++ MY CHANGE
 
   // ids stores the instance indices for each node
   std::vector<uint> ids;
@@ -80,10 +80,16 @@ class Tree {
   std::vector<TreeNode> nodes;
   bool is_weighted;
   int n_leaves, n_threads;
-  std::vector<int> sample_leaf_indices; //leaf idx of each training sample
-  std::vector<int> test_sample_leaf_indices; //leaf idx of each training sample
   int treeDepth; // Total tree depth
   double exp_sum; // Normalization term for depth weights
+
+  // New attributes for storing per-training sample data
+  std::vector<int> sample_leaf_indices;  // Leaf index of each training sample //<<++MY CHANGE
+  std::vector<double> sample_residuals;  // Residual of each training sample //<<++MY CHANGE
+  std::vector<double> sample_hessians;   // Hessian of each training sample //<<++MY CHANGE
+
+  // New attribute for storing per-test sample data
+  std::vector<int> test_leaf_indices;  // Leaf index of each test sample //<<++MY CHANGE
 
   Config *config;
   Data *data;

@@ -762,14 +762,28 @@ void Regression::test() {
       for (int i = 0; i < data->n_data; i++) {
         // updates has leaf idx for all test samples
         F[0][i] += config->model_shrinkage * updates[i];
+        this->intermediate_predictions[m][i] = F[0][i]; // <<++ MY CHANGE
 
-        /*
-          We can use idx i (as test sample idx) to call calculateBoostInInfluence
-        */
-       
+        
+        // ///////////BOOST-IN START/////////////////////////////////////////////////
+        int test_leaf_index = additive_trees[m][0]->test_leaf_indices[i]; // <<++ MY CHANGE
+        double boostInInfluence = 0.0; // <<++ MY CHANGE
 
-        // Populate intermediate_predictions matrix
-        intermediate_predictions[m][i] = F[0][i]; //<<++ MY CHANGE
+        for(int j = 0; j < additive_trees[m][0]->sample_leaf_indices.size(); j++){ // <<++ MY CHANGE
+          int train_leaf_index = additive_trees[m][0]->sample_leaf_indices[j];
+          // Check if both samples are in the same leaf (INDICATOR FUNCTION)
+          if (train_leaf_index != test_leaf_index) {
+              continue;
+          }
+          double prediction_test = intermediate_predictions[m][i];
+          double residual_test = prediction_test - data->Y[i];
+          double dL_dy_hat = 2.0 * residual_test;  
+          double dTheta_dWi = additive_trees[m][0]->computeThetaDerivative(j, i);
+          double eta = config->model_shrinkage; // Learning rate
+          // Update the BoostIn influence sum
+          boostInInfluence += dL_dy_hat * eta * dTheta_dWi;
+        }
+        // ///////////BOOST-IN END/////////////////////////////////////////////////
       }
     }
     if (config->model_mode == "test_rank") {
@@ -785,39 +799,7 @@ void Regression::test() {
   }
 }
 
-/**
-   * Method to calculate BoostIn influence for L2 loss.
-   * @param train_index Index of the training sample.
-   * @param test_index Index of the test sample.
-   * @return BoostIn influence value for the given indices.
-   */
-  double Regression::calculateBoostInInfluence(int train_index, int test_index) {
-      double boostInInfluence = 0.0;
 
-      // Loop over all iterations
-      for (int t = 0; t < config->model_n_iterations; ++t) {
-          // Get leaf index for the training and test samples in current iteration
-          int train_leaf_index = additive_trees[t][0]->sample_leaf_indices[train_index];
-          int test_leaf_index = additive_trees[t][0]->getLeafIndex(test_index);
-
-          // Check if both samples are in the same leaf (INDICATOR FUNCTION)
-          if (train_leaf_index != test_leaf_index) {
-              continue;
-          }
-
-          // Compute partial derivatives and intermediate terms
-          double prediction_test = intermediate_predictions[t][test_index]; //NEED INTERMEDIATE PREDICTIONS. DONE (12:28 pm 3rd Jan)
-          double residual_test = prediction_test - data->Y[test_index];
-          double dL_dy_hat = 2.0 * residual_test;  // Partial derivative of L2 loss w.r.t. prediction
-          double dTheta_dWi = additive_trees[t][0]->computeThetaDerivative(train_leaf_index, test_leaf_index); // ∂θ_t,l/∂w_i
-          double eta = config->model_shrinkage; // Learning rate
-
-          // Update the BoostIn influence sum
-          boostInInfluence += dL_dy_hat * eta * dTheta_dWi;
-      }
-
-      return boostInInfluence;
-}
 
 /**
  * Method to implement training process for MART algorithm as described
@@ -925,19 +907,6 @@ double Regression::getLSLoss() {
   }
   return loss / data->n_data;
 }
-
-/**
- * Compute the partial derivative of LS loss for a single data instance.
- * @param[in] instance_id: Index of the data instance.
- * @return Partial derivative of the LS loss with respect to the predicted value.
- */
-double Regression::getLSLossDerivative(int instance_id) { //<<++ MY CHANGE
-  if (instance_id < 0 || instance_id >= data->n_data) {
-    throw std::out_of_range("Invalid instance_id: out of range.");
-  }
-  return 2.0 * (F[0][instance_id] - data->Y[instance_id]);
-}
-
 
 double Regression::getL1Loss() {
   double loss = 0.0;
