@@ -747,56 +747,100 @@ void Regression::test() {
   std::vector<std::vector<std::vector<unsigned int>>> buffer =
       GradientBoosting::initBuffer();
 
-  Utils::Timer t1;
+  Utils::Timer t1, t2, t3, io_timer;
   t1.restart();
 
   double best_accuracy = 0;
   double low_err = std::numeric_limits<double>::max();
+
+  int n_training = additive_trees[0][0]->sample_leaf_indices.size(); // Number of training samples
+  std::vector<std::vector<double>> boostInMatrix(
+      n_training,
+      std::vector<double>(data->n_data, 0.0));
+
   for (int m = 0; m < config->model_n_iterations; m++) {
-    if (additive_trees[m][0] != NULL) {
+    t2.restart(); // Start timing for the tree-processing loop
+    if (additive_trees[m][0] != NULL) { // Iterate over trees
       additive_trees[m][0]->init(nullptr, &buffer[0], &buffer[1], nullptr,
-                                 nullptr, nullptr,ids_tmp.data(),H_tmp.data(),R_tmp.data());
-      
+                                 nullptr, nullptr, ids_tmp.data(), H_tmp.data(), R_tmp.data());
+
       std::vector<double> updates = additive_trees[m][0]->predictAll(data);
 
-      for (int i = 0; i < data->n_data; i++) {
-        // updates has leaf idx for all test samples
+      for (int i = 0; i < data->n_data; i++) { // Iterate over test samples
         F[0][i] += config->model_shrinkage * updates[i];
-        this->intermediate_predictions[m][i] = F[0][i]; // <<++ MY CHANGE
+        this->intermediate_predictions[m][i] = F[0][i]; // Store intermediate predictions
 
-        
-        // ///////////BOOST-IN START/////////////////////////////////////////////////
-        int test_leaf_index = additive_trees[m][0]->test_leaf_indices[i]; // <<++ MY CHANGE
-        double boostInInfluence = 0.0; // <<++ MY CHANGE
-
-        for(int j = 0; j < additive_trees[m][0]->sample_leaf_indices.size(); j++){ // <<++ MY CHANGE
-          int train_leaf_index = additive_trees[m][0]->sample_leaf_indices[j];
-          // Check if both samples are in the same leaf (INDICATOR FUNCTION)
-          if (train_leaf_index != test_leaf_index) {
-              continue;
-          }
-          double prediction_test = intermediate_predictions[m][i];
-          double residual_test = prediction_test - data->Y[i];
-          double dL_dy_hat = 2.0 * residual_test;  
-          double dTheta_dWi = additive_trees[m][0]->computeThetaDerivative(j, i);
-          double eta = config->model_shrinkage; // Learning rate
-          // Update the BoostIn influence sum
-          boostInInfluence += dL_dy_hat * eta * dTheta_dWi;
+        for (int j = 0; j < n_training; j++) { // Iterate over training samples
+          calculateBoostInInfluence(j, i, m, &boostInMatrix);
         }
-        // ///////////BOOST-IN END/////////////////////////////////////////////////
       }
     }
+    double loop_time = t2.get_time(); // Record the tree-processing loop time
+    printf("Tree-processing loop (iteration %d) time: %.5f seconds || ", m + 1, loop_time);
+
     if (config->model_mode == "test_rank") {
-      /*      data->loadRankQuery();
-            auto p = getNDCG();
-            printf("Time: %f | NDCG0 %f NDCG1 %f\n",
-              t1.get_time_restart(), p.first, p.second);*/
+      // Rank-based evaluation logic (if applicable)
     } else {
-      if ((m + 1) % config->model_eval_every == 0){
-        print_test_message(m + 1,t1.get_time_restart(),low_err);
+      if ((m + 1) % config->model_eval_every == 0) {
+        print_test_message(m + 1, t1.get_time_restart(), low_err);
       }
     }
   }
+
+  // Time the I/O operation
+  io_timer.restart();
+
+  // Write the BoostIn matrix to the CSV file
+  std::string influence_file = config->formatted_output_name + "BoostIn_Influence.csv";
+  FILE *csv_file = fopen(influence_file.c_str(), "w");
+  if (csv_file == NULL) {
+    perror("Error opening influence file");
+    return;
+  }
+
+  // Write column headers
+  // fprintf(csv_file, "Train/Test,");
+  // for (int i = 0; i < data->n_data; i++) {
+  //   fprintf(csv_file, "%d,", i);
+  // }
+  // fprintf(csv_file, "\n");
+
+  // Write BoostIn influence scores
+  for (int j = 0; j < n_training; j++) {
+    fprintf(csv_file, "%d,", j); // Write training sample index
+    for (int i = 0; i < data->n_data; i++) {
+      fprintf(csv_file, "%.6f,", boostInMatrix[j][i]);
+    }
+    fprintf(csv_file, "\n");
+  }
+
+  fclose(csv_file);
+  double io_time = io_timer.get_time(); // Record I/O operation time
+  printf("I/O operation time: %.5f seconds\n", io_time);
+}
+
+void Regression::calculateBoostInInfluence(
+  int train_index,
+  int test_index,
+  int t, 
+  std::vector<std::vector<double>>* boostInMatrix
+) {
+  int train_leaf_index = additive_trees[t][0]->sample_leaf_indices[train_index];
+  int test_leaf_index = additive_trees[t][0]->test_leaf_indices[test_index];
+
+  // Check if training and test samples are in the same leaf
+  if (train_leaf_index != test_leaf_index) {
+    return;
+  }
+
+  double prediction_test = intermediate_predictions[t][test_index];
+  double residual_test = prediction_test - data->Y[test_index];
+  double dL_dy_hat = 2.0 * residual_test;
+  double dTheta_dWi = additive_trees[t][0]->computeThetaDerivative(train_index, test_index);
+  double eta = config->model_shrinkage;
+
+  // Update BoostIn influence matrix
+  (*boostInMatrix)[train_index][test_index] += dL_dy_hat * eta * dTheta_dWi;
 }
 
 

@@ -135,7 +135,11 @@ class Regression : public GradientBoosting {
 	virtual void print_test_message(int iter,double iter_time,double& low_loss);
 	virtual void print_train_message(int iter,double loss,double iter_time);
   void computeHessianResidual();
-  double calculateBoostInInfluence(int train_index, int test_index); //<<++ MY CHANGE
+  void calculateBoostInInfluence(
+    int train_index,
+     int test_index,
+      int t,
+        std::vector<std::vector<double>>* boostInMatrix); //<<++ MY CHANGE
   double getLSLoss();
   double getLSLossDerivative(int instance_id); //<<++ MY CHANGE
   double getL1Loss();
