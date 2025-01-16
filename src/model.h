@@ -60,7 +60,7 @@ class GradientBoosting {
   std::vector<double> feature_importance;
   std::vector<unsigned int> ids, fids;
   std::string experiment_path;
-  std::vector<std::vector<double>> intermediate_predictions; //<++ MY CHANGE
+  std::vector<double> test_sample_losses; //<++ MY CHANGE
 
   Config* config;
   Data* data;
@@ -71,6 +71,11 @@ class GradientBoosting {
 	std::vector<double> H_tmp;
 	std::vector<uint> ids_tmp;
 
+  enum InfluenceType{ //<<+++ MY CHANGE
+    BOOST_IN,
+    BOOST_IN_LCA
+  };
+  
   virtual void saveF();
 
  public:
@@ -140,6 +145,12 @@ class Regression : public GradientBoosting {
      int test_index,
       int t,
         std::vector<std::vector<double>>* boostInMatrix); //<<++ MY CHANGE
+  void calculateBoostInInfluence_LCA(
+  int train_index,
+  int test_index,
+  int t, 
+  double* lca_prediction_t_j_i,
+  std::vector<std::vector<double>>* boostInMatrix_LCA);
   double getLSLoss();
   double getLSLossDerivative(int instance_id); //<<++ MY CHANGE
   double getL1Loss();

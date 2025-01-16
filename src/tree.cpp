@@ -512,24 +512,24 @@ void Tree::populateTree(FILE *fileptr) {
     nodes[n] = node;
   }
 
-  int sample_leaf_indices_size = 0; //<<++MY CHANGE
-  ret += fread(&sample_leaf_indices_size, sizeof(sample_leaf_indices_size), 1, fileptr); //<<++MY CHANGE
-  sample_leaf_indices.resize(sample_leaf_indices_size); //<<++MY CHANGE
-  ret += fread(sample_leaf_indices.data(), sizeof(int), sample_leaf_indices_size, fileptr); //<<++MY CHANGE
+  int train_leaf_indices_size = 0; //<<++MY CHANGE
+  ret += fread(&train_leaf_indices_size, sizeof(train_leaf_indices_size), 1, fileptr); //<<++MY CHANGE
+  train_leaf_indices.resize(train_leaf_indices_size); //<<++MY CHANGE
+  ret += fread(train_leaf_indices.data(), sizeof(int), train_leaf_indices_size, fileptr); //<<++MY CHANGE
 
-  int sample_residuals_size = 0; //<<++MY CHANGE
-  ret += fread(&sample_residuals_size, sizeof(sample_residuals_size), 1, fileptr); //<<++MY CHANGE
-  sample_residuals.resize(sample_residuals_size); //<<++MY CHANGE
-  ret += fread(sample_residuals.data(), sizeof(double), sample_residuals_size, fileptr); //<<++MY CHANGE
+  int train_sample_residuals_size = 0; //<<++MY CHANGE
+  ret += fread(&train_sample_residuals_size, sizeof(train_sample_residuals_size), 1, fileptr); //<<++MY CHANGE
+  train_sample_residuals.resize(train_sample_residuals_size); //<<++MY CHANGE
+  ret += fread(train_sample_residuals.data(), sizeof(double), train_sample_residuals_size, fileptr); //<<++MY CHANGE
 
-  int sample_hessians_size = 0; //<<++MY CHANGE
-  ret += fread(&sample_hessians_size, sizeof(sample_hessians_size), 1, fileptr); //<<++MY CHANGE
-  sample_hessians.resize(sample_hessians_size); //<<++MY CHANGE
-  ret += fread(sample_hessians.data(), sizeof(double), sample_hessians_size, fileptr); //<<++MY CHANGE
+  int train_sample_hessians_size = 0; //<<++MY CHANGE
+  ret += fread(&train_sample_hessians_size, sizeof(train_sample_hessians_size), 1, fileptr); //<<++MY CHANGE
+  train_sample_hessians.resize(train_sample_hessians_size); //<<++MY CHANGE
+  ret += fread(train_sample_hessians.data(), sizeof(double), train_sample_hessians_size, fileptr); //<<++MY CHANGE
 
   // Assert correctness of loaded sizes
-  assert(sample_leaf_indices_size == sample_residuals_size && //<<++MY CHANGE
-         sample_residuals_size == sample_hessians_size && //<<++MY CHANGE
+  assert(train_leaf_indices_size == train_sample_residuals_size && //<<++MY CHANGE
+         train_sample_residuals_size == train_sample_hessians_size && //<<++MY CHANGE
          "Mismatch in sizes of loaded sample-related data structures!"); //<<++MY CHANGE
 }
 
@@ -611,9 +611,9 @@ std::vector<double> Tree::predictAll(Data *data) {
  */
 void Tree::regress() {
 
-  this->sample_leaf_indices.resize(data->n_data, -1);  //<<++MY CHANGE
-  this->sample_residuals.resize(data->n_data, 0.0);   //<<++MY CHANGE
-  this->sample_hessians.resize(data->n_data, 0.0);    //<<++MY CHANGE
+  this->train_leaf_indices.resize(data->n_data, -1);  //<<++MY CHANGE
+  this->train_sample_residuals.resize(data->n_data, 0.0);   //<<++MY CHANGE
+  this->train_sample_hessians.resize(data->n_data, 0.0);    //<<++MY CHANGE
 
   double correction = 1.0;
   if (data->data_header.n_classes != 1 && config->model_name.size() >= 3 &&
@@ -632,22 +632,21 @@ void Tree::regress() {
       CONDITION_OMP_PARALLEL_FOR(
         omp parallel for schedule(static, 1) reduction(+: numerator, denominator),
         config->use_omp == true,
-        for (uint d = start; d < end; ++d) {
-          auto id = ids[d];
+        for (uint d = start; d < end; ++d) { //Loop over local sample id's that fall in node
+          auto id = ids[d]; //Map to global sample ids
           numerator += R[id];
           denominator += H[id];
           // Ensure the current node is a leaf before assigning it to the sample
           if (nodes[i].is_leaf) { //<<++MY CHANGE
-            this->sample_leaf_indices[id] = i;   // Assign the current node index as the leaf for this sample //<<++MY CHANGE
-            this->sample_residuals[id] = R[id]; // Store the residual for this sample //<<++MY CHANGE
-            this->sample_hessians[id] = H[id];  // Store the hessian for this sample //<<++MY CHANGE
+            this->train_leaf_indices[id] = i;   // Assign the current node index as the leaf for this sample //<<++MY CHANGE
+            this->train_sample_residuals[id] = R[id]; // Store the residual for this sample //<<++MY CHANGE
+            this->train_sample_hessians[id] = H[id];  // Store the hessian for this sample //<<++MY CHANGE
           }
         }
       )
       nodes[i].sum_residuals = numerator; //<<++MY CHANGE
       nodes[i].sum_hessians = denominator; //<<++MY CHANGE
       assert(nodes[i].sum_hessians >= 0 && "Node sum_hessians must be non-negative!"); //<<++MY CHANGE
-
 
       nodes[i].predict_v =
           std::min(std::max(correction * numerator /
@@ -681,20 +680,20 @@ void Tree::saveTree(FILE *fp) {
     fwrite(&node.sum_hessians, sizeof(node.sum_hessians), 1, fp);
   }
 
-  int sample_leaf_indices_size = sample_leaf_indices.size(); //<<++ MY CHANGE
-  fwrite(&sample_leaf_indices_size, sizeof(sample_leaf_indices_size), 1, fp); //<<++ MY CHANGE
+  int train_leaf_indices_size = train_leaf_indices.size(); //<<++ MY CHANGE
+  fwrite(&train_leaf_indices_size, sizeof(train_leaf_indices_size), 1, fp); //<<++ MY CHANGE
 
-  fwrite(sample_leaf_indices.data(), sizeof(int), sample_leaf_indices_size, fp); //<<++ MY CHANGE
+  fwrite(train_leaf_indices.data(), sizeof(int), train_leaf_indices_size, fp); //<<++ MY CHANGE
 
-  int sample_residuals_size = sample_residuals.size(); //<<++ MY CHANGE
-  fwrite(&sample_residuals_size, sizeof(sample_residuals_size), 1, fp); //<<++ MY CHANGE
+  int train_sample_residuals_size = train_sample_residuals.size(); //<<++ MY CHANGE
+  fwrite(&train_sample_residuals_size, sizeof(train_sample_residuals_size), 1, fp); //<<++ MY CHANGE
 
-  fwrite(sample_residuals.data(), sizeof(double), sample_residuals_size, fp); //<<++ MY CHANGE
+  fwrite(train_sample_residuals.data(), sizeof(double), train_sample_residuals_size, fp); //<<++ MY CHANGE
 
-  int sample_hessians_size = sample_hessians.size(); //<<++ MY CHANGE
-  fwrite(&sample_hessians_size, sizeof(sample_hessians_size), 1, fp); //<<++ MY CHANGE
+  int train_sample_hessians_size = train_sample_hessians.size(); //<<++ MY CHANGE
+  fwrite(&train_sample_hessians_size, sizeof(train_sample_hessians_size), 1, fp); //<<++ MY CHANGE
 
-  fwrite(sample_hessians.data(), sizeof(double), sample_hessians_size, fp); //<<++ MY CHANGE
+  fwrite(train_sample_hessians.data(), sizeof(double), train_sample_hessians_size, fp); //<<++ MY CHANGE
 }
 
 
@@ -878,8 +877,8 @@ void Tree::split(int x, int l) {
     int leaf_idx = this->test_leaf_indices[test_idx];
 
     // Access the gradient, hessian, and leaf value for the training sample
-    double g_t_i = this->sample_residuals[train_idx];
-    double h_t_i = this->sample_hessians[train_idx];
+    double g_t_i = this->train_sample_residuals[train_idx];
+    double h_t_i = this->train_sample_hessians[train_idx];
     double theta_t_l = nodes[leaf_idx].predict_v;
 
     // Compute ∑_{j  ∈ I_{t,l}} h_{t,j} + λ
@@ -893,54 +892,71 @@ void Tree::split(int x, int l) {
   }
 
 
+  double Tree::computeThetaDerivative_LCA(int train_idx, int lca_node_idx) {
+      int train_leaf_idx = this->train_leaf_indices[train_idx];
 
-/**
- * Calculate the Lowest Common Ancestor (LCA) of two nodes.
- * @param[in] node1: Index of the first node
- * @param[in] node2: Index of the second node
- * @return Index of the LCA node
- */
-int Tree::findLCA(int node1, int node2) { //<<++MY CHANGE
-    // Check for valid node indices 
-    if (node1 < 0 || node2 < 0 || node1 >= nodes.size() || node2 >= nodes.size()) {
-        fprintf(stderr, "[Error] Invalid node indices provided for LCA.\n");
-        return -1;
-    }
+      // Access the gradient, hessian for the training sample and leaf value of LCA
+      double g_t_i = this->train_sample_residuals[train_idx];
+      double h_t_i = this->train_sample_hessians[train_idx];
+      double theta_t_l = nodes[lca_node_idx].predict_v;
 
-    // Step 1: Trace the path to the root for node1
-    std::unordered_set<int> ancestors;
-    int current = node1;
-    while (current != -1) {  // Root node has parent == -1
-        ancestors.insert(current);
-        current = nodes[current].parent;
-    }
+      // Compute ∑_{j  ∈ I_{t,l}} h_{t,j} + λ
+      double sum_h_t_j = nodes[lca_node_idx].sum_hessians;
+      sum_h_t_j += config->tree_damping_factor; // Regularization term λ
 
-    // Step 2: Trace the path to the root for node2 and find the first common ancestor
-    current = node2;
-    while (current != -1) {
-        if (ancestors.count(current)) {
-            return current;  // Found the LCA
-        }
-        current = nodes[current].parent;
-    }
+      // Compute the derivative ∂θ_{t,l}/∂w_i
+      double derivative = (g_t_i + h_t_i * theta_t_l) / sum_h_t_j;
 
-    return -1;  // LCA not found (should not happen if the tree is valid)
-}
+      return derivative;
+  }
 
-/**
- * Calculate the depth weight of a node.
- * @param[in] node_idx: Index of the node
- * @return Depth weight of the node
- */
-double Tree::calculateDepthWeight(int node_idx) { //<<++MY CHANGE
-    if (node_idx < 0 || node_idx >= nodes.size()) {
-        fprintf(stderr, "[Error] Invalid node index provided.\n");
-        return 0.0;
-    }
 
-    int depth = nodes[node_idx].depth; // Precomputed node depth
-    return std::exp(depth) / exp_sum;
-}
+  /**
+   * Calculate the Lowest Common Ancestor (LCA) of two nodes.
+   * @param[in] node1: Index of the first node
+   * @param[in] node2: Index of the second node
+   * @return Index of the LCA node
+   */
+  int Tree::findLCA(int node1, int node2) { //<<++MY CHANGE
+      // Assert that the node indices are valid
+      assert(node1 >= 0 && node2 >= 0 && "Invalid node indices: Indices cannot be negative.");
+      assert(node1 < nodes.size() && node2 < nodes.size() && "Invalid node indices: Indices out of bounds.");
+
+
+      // Step 1: Trace the path to the root for node1
+      std::unordered_set<int> ancestors;
+      int current = node1;
+      while (current != -1) {  // Root node has parent == -1
+          ancestors.insert(current);
+          current = nodes[current].parent;
+      }
+
+      // Step 2: Trace the path to the root for node2 and find the first common ancestor
+      current = node2;
+      while (current != -1) {
+          if (ancestors.count(current)) {
+              return current;  // Found the LCA
+          }
+          current = nodes[current].parent;
+      }
+
+      return -1;  // LCA not found (should not happen if the tree is valid)
+  }
+
+  /**
+   * Calculate the depth weight of a node.
+   * @param[in] node_idx: Index of the node
+   * @return Depth weight of the node
+   */
+  double Tree::calculateDepthWeight(int node_idx) { //<<++MY CHANGE
+      if (node_idx < 0 || node_idx >= nodes.size()) {
+          fprintf(stderr, "[Error] Invalid node index provided.\n");
+          return 0.0;
+      }
+
+      int depth = nodes[node_idx].depth; // Precomputed node depth
+      return std::exp(depth) / exp_sum;
+  }
 
 
 }  // namespace ABCBoost

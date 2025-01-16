@@ -64,7 +64,7 @@ class Tree {
   std::vector<std::vector<std::vector<HistBin>>> *hist;
   std::vector<std::vector<uint>> *l_buffer, *r_buffer;
   std::vector<double> *feature_importance;
-  double *hessian, *residual; //NEED TO SAVE FOR EACH TREE IN TRAINED MODEL <<++ MY CHANGE
+  double *hessian, *residual; 
 
   // ids stores the instance indices for each node
   std::vector<uint> ids;
@@ -84,12 +84,14 @@ class Tree {
   double exp_sum; // Normalization term for depth weights
 
   // New attributes for storing per-training sample data
-  std::vector<int> sample_leaf_indices;  // Leaf index of each training sample //<<++MY CHANGE
-  std::vector<double> sample_residuals;  // Residual of each training sample //<<++MY CHANGE
-  std::vector<double> sample_hessians;   // Hessian of each training sample //<<++MY CHANGE
+  std::vector<int> train_leaf_indices;  // Leaf index of each training sample //<<++MY CHANGE
+  std::vector<double> train_sample_residuals;  // Residual of each training sample //<<++MY CHANGE
+  std::vector<double> train_sample_hessians;   // Hessian of each training sample //<<++MY CHANGE
+  
 
   // New attribute for storing per-test sample data
   std::vector<int> test_leaf_indices;  // Leaf index of each test sample //<<++MY CHANGE
+  std::vector<double> lca_predictions;
 
   Config *config;
   Data *data;
@@ -145,6 +147,7 @@ class Tree {
 
   int getLeafIndex(int test_idx); //<<++MY CHANGE
   double computeThetaDerivative(int train_idx, int test_idx); //<<++MY CHANGE
+  double computeThetaDerivative_LCA(int train_idx, int test_idx); //<<++MY CHANGE
   int findLCA(int node1, int node2);  //<<++MY CHANGE
   double calculateDepthWeight(int node_idx); //<<++MY CHANGE
 

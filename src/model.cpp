@@ -282,10 +282,7 @@ void GradientBoosting::init() {
   R_tmp.resize(data->n_data);
   H_tmp.resize(data->n_data);
   ids_tmp.resize(data->n_data);
-
-  intermediate_predictions = std::vector<std::vector<double>>( //<++ MY CHANGE
-      config->model_n_iterations,
-      std::vector<double>(data->n_data, 0.0));
+  this->test_sample_losses.resize(data->n_data); //<<++ MY CHANGE
 
 }
 
@@ -744,6 +741,7 @@ void Regression::print_test_message(int iter,double iter_time,double& low_loss){
  * in the individual method-comments.
  */
 void Regression::test() {
+
   std::vector<std::vector<std::vector<unsigned int>>> buffer =
       GradientBoosting::initBuffer();
 
@@ -753,10 +751,18 @@ void Regression::test() {
   double best_accuracy = 0;
   double low_err = std::numeric_limits<double>::max();
 
-  int n_training = additive_trees[0][0]->sample_leaf_indices.size(); // Number of training samples
-  std::vector<std::vector<double>> boostInMatrix(
+  int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
+  int n_testing = data->n_data; // Number of test samples
+
+  bool getInfluence = true; //Flag: Compute Influence?
+  InfluenceType inf = InfluenceType::BOOST_IN_LCA; //What method of influence?
+  
+  std::vector<std::vector<double>> influenceMatrix(
       n_training,
-      std::vector<double>(data->n_data, 0.0));
+      std::vector<double>(n_testing, 0.0));
+
+   //IS THIS CORRECT? Think on Jan 15-16
+  std::vector<std::vector<double>> lca_predictions(n_training, std::vector<double>(n_testing, 0));
 
   for (int m = 0; m < config->model_n_iterations; m++) {
     t2.restart(); // Start timing for the tree-processing loop
@@ -766,17 +772,22 @@ void Regression::test() {
 
       std::vector<double> updates = additive_trees[m][0]->predictAll(data);
 
-      for (int i = 0; i < data->n_data; i++) { // Iterate over test samples
+      for (int i = 0; i < n_testing; i++) { // Iterate over test samples
         F[0][i] += config->model_shrinkage * updates[i];
-        this->intermediate_predictions[m][i] = F[0][i]; // Store intermediate predictions
-
-        for (int j = 0; j < n_training; j++) { // Iterate over training samples
-          calculateBoostInInfluence(j, i, m, &boostInMatrix);
+        if(getInfluence){
+          for (int j = 0; j < n_training; j++) { // Iterate over training samples
+            if(inf == InfluenceType::BOOST_IN){
+              calculateBoostInInfluence(j, i, m, &influenceMatrix);
+            }
+            if(inf == InfluenceType::BOOST_IN_LCA){
+              calculateBoostInInfluence_LCA(j, i, m, &lca_predictions[j][i], &influenceMatrix);
+            }
+          }
         }
       }
     }
     double loop_time = t2.get_time(); // Record the tree-processing loop time
-    printf("Tree-processing loop (iteration %d) time: %.5f seconds || ", m + 1, loop_time);
+    printf("iteration %d || time: %.5f seconds || ", m + 1, loop_time);
 
     if (config->model_mode == "test_rank") {
       // Rank-based evaluation logic (if applicable)
@@ -786,46 +797,64 @@ void Regression::test() {
       }
     }
   }
+  if(getInfluence){
+    // Time the I/O operation
+    io_timer.restart();
 
-  // Time the I/O operation
-  io_timer.restart();
-
-  // Write the BoostIn matrix to the CSV file
-  std::string influence_file = config->formatted_output_name + "BoostIn_Influence.csv";
-  FILE *csv_file = fopen(influence_file.c_str(), "w");
-  if (csv_file == NULL) {
-    perror("Error opening influence file");
-    return;
-  }
-
-  // Write column headers
-  // fprintf(csv_file, "Train/Test,");
-  // for (int i = 0; i < data->n_data; i++) {
-  //   fprintf(csv_file, "%d,", i);
-  // }
-  // fprintf(csv_file, "\n");
-
-  // Write BoostIn influence scores
-  for (int j = 0; j < n_training; j++) {
-    fprintf(csv_file, "%d,", j); // Write training sample index
-    for (int i = 0; i < data->n_data; i++) {
-      fprintf(csv_file, "%.6f,", boostInMatrix[j][i]);
+    // Write the BoostIn matrix to the CSV file
+    std::string extension = inf == InfluenceType::BOOST_IN ? "BoostIn_Influence" : "LCA_Influence";
+    std::string influence_file = "./influence_scores/"  + config->formatted_output_name + extension + ".csv";
+    FILE *csv_file = fopen(influence_file.c_str(), "w");
+    if (csv_file == NULL) {
+      perror("Error opening influence file");
+      return;
     }
-    fprintf(csv_file, "\n");
+
+
+    // Write BoostIn influence scores
+    for (int j = 0; j < n_training; j++) {
+      for (int i = 0; i < data->n_data; i++) {
+        if (i == data->n_data - 1) {
+          fprintf(csv_file, "%.6f", influenceMatrix[j][i]);
+        } else {
+          fprintf(csv_file, "%.6f,", influenceMatrix[j][i]);
+        }
+      }
+      fprintf(csv_file, "\n"); 
+    }
+
+
+    fclose(csv_file);
+    double io_time = io_timer.get_time(); 
+    printf("I/O operation time: %.5f seconds\n", io_time);
+
+   
+  }
+  // Open a CSV file for writing test sample losses
+  std::string losses_file = "./influence_scores/"  + config->formatted_output_name + "_test_sample_losses.csv";
+  FILE *losses_csv = fopen(losses_file.c_str(), "w");
+  if (losses_csv == NULL) {
+      perror("Error opening losses file");
+      return;
   }
 
-  fclose(csv_file);
-  double io_time = io_timer.get_time(); // Record I/O operation time
-  printf("I/O operation time: %.5f seconds\n", io_time);
+  // Write losses for each test sample
+  for (int i = 0; i < test_sample_losses.size(); i++) {
+      fprintf(losses_csv, "%d,%.6f\n", i, test_sample_losses[i]);
+  }
+
+  // Close the file
+  fclose(losses_csv);
+  
 }
 
 void Regression::calculateBoostInInfluence(
   int train_index,
   int test_index,
   int t, 
-  std::vector<std::vector<double>>* boostInMatrix
+  std::vector<std::vector<double>>* influenceMatrix
 ) {
-  int train_leaf_index = additive_trees[t][0]->sample_leaf_indices[train_index];
+  int train_leaf_index = additive_trees[t][0]->train_leaf_indices[train_index];
   int test_leaf_index = additive_trees[t][0]->test_leaf_indices[test_index];
 
   // Check if training and test samples are in the same leaf
@@ -833,16 +862,43 @@ void Regression::calculateBoostInInfluence(
     return;
   }
 
-  double prediction_test = intermediate_predictions[t][test_index];
+  double prediction_test = F[0][test_index]; //intermediate prediction
   double residual_test = prediction_test - data->Y[test_index];
   double dL_dy_hat = 2.0 * residual_test;
   double dTheta_dWi = additive_trees[t][0]->computeThetaDerivative(train_index, test_index);
   double eta = config->model_shrinkage;
 
   // Update BoostIn influence matrix
-  (*boostInMatrix)[train_index][test_index] += dL_dy_hat * eta * dTheta_dWi;
+  (*influenceMatrix)[train_index][test_index] += dL_dy_hat * eta * dTheta_dWi;
 }
 
+
+void Regression::calculateBoostInInfluence_LCA(
+  int train_index,
+  int test_index,
+  int t, 
+  double* lca_prediction_t_j_i,
+  std::vector<std::vector<double>>* boostInMatrix_LCA
+) {
+  int train_leaf_index = additive_trees[t][0]->train_leaf_indices[train_index];
+  int test_leaf_index = additive_trees[t][0]->test_leaf_indices[test_index];
+
+  int lcaNodeIdx = additive_trees[t][0]->findLCA(train_leaf_index,test_leaf_index);
+  assert(lcaNodeIdx != -1 && "LCA computation failed: LCA index is -1");
+
+  double lcaPredict_v = additive_trees[t][0]->nodes[lcaNodeIdx].predict_v;
+  *lca_prediction_t_j_i += config->model_shrinkage * lcaPredict_v;
+  // std::cout << lca_prediction_t_j_i;
+
+  double prediction_test = *lca_prediction_t_j_i; //intermediate prediction
+  double residual_test = prediction_test - data->Y[test_index];
+  double dL_dy_hat = 2.0 * residual_test;
+  double dTheta_dWi = additive_trees[t][0]->computeThetaDerivative_LCA(train_index, lcaNodeIdx);
+  double eta = config->model_shrinkage;
+
+  // Update BoostIn influence matrix
+  (*boostInMatrix_LCA)[train_index][test_index] += dL_dy_hat * eta * dTheta_dWi;
+}
 
 
 /**
@@ -945,9 +1001,13 @@ void Regression::computeHessianResidual() {
  * @return summed least squares loss over training set.
  */
 double Regression::getLSLoss() {
+  
   double loss = 0.0;
   for (int i = 0; i < data->n_data; i++) {
-    loss += (F[0][i] - data->Y[i]) * (F[0][i] - data->Y[i]);
+    double ith_loss = (F[0][i] - data->Y[i]) * (F[0][i] - data->Y[i]); //<<++ MY CHANGE
+    loss += ith_loss;
+    if(config->model_mode == "test") this->test_sample_losses[i] = ith_loss / data->n_data; //<<++ MY CHANGE
+    
   }
   return loss / data->n_data;
 }
