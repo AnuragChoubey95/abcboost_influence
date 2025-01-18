@@ -517,6 +517,7 @@ void GradientBoosting::setupExperiment() {
   }
 
   experiment_path = sstream.str();
+  // std::cout << experiment_path << std::endl;
   config->formatted_output_name = experiment_path;
 
   log_out = (config->save_log && config->no_label == false) ? fopen((experiment_path + "." + config->model_mode + "log").c_str(), "w") : stdout;
@@ -754,7 +755,7 @@ void Regression::test() {
   int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
   int n_testing = data->n_data; // Number of test samples
 
-  bool getInfluence = true; //Flag: Compute Influence?
+  bool getInfluence = false; //Flag: Compute Influence?
   InfluenceType inf = InfluenceType::BOOST_IN_LCA; //What method of influence?
   
   std::vector<std::vector<double>> influenceMatrix(
@@ -831,7 +832,8 @@ void Regression::test() {
    
   }
   // Open a CSV file for writing test sample losses
-  std::string losses_file = "./influence_scores/"  + config->formatted_output_name + "_test_sample_losses.csv";
+  std::cout << "Writing losses to " << config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;
+  std::string losses_file = "./loss_comp/"  + config->model_pretrained_path + "_test_sample_losses.csv";
   FILE *losses_csv = fopen(losses_file.c_str(), "w");
   if (losses_csv == NULL) {
       perror("Error opening losses file");
@@ -951,6 +953,7 @@ void Regression::train() {
 
   if (config->save_model) saveModel(config->model_n_iterations);
   if (config->save_importance) getTopFeatures();
+  
 }
 
 /**

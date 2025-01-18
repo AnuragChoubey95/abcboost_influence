@@ -29,6 +29,7 @@ struct ModelHeader {
   // config info
   Config config;
 	DataHeader auxDataHeader; // saves mapping
+  
 
   void serialize(FILE* fp) { 
 		config.serialize(fp);
@@ -61,6 +62,7 @@ class GradientBoosting {
   std::vector<unsigned int> ids, fids;
   std::string experiment_path;
   std::vector<double> test_sample_losses; //<++ MY CHANGE
+  
 
   Config* config;
   Data* data;
