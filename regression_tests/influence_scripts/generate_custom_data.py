@@ -65,13 +65,12 @@ def main():
     parser.add_argument("data_file", type=str, help="Path to the dataset CSV file (in ../data/ directory).")
     parser.add_argument("percentage", type=str, help="Percentage of top-ranked samples to remove (e.g., '1%').")
     
-
     args = parser.parse_args()
 
     # Call the filter_data function with parsed arguments
     rank_file_path = f"../influence_scores/{args.ranking_file}"
     data_file_path = f"../data/{args.data_file}"
-    output_path = f"../custom_data/"
+    output_path = f"../custom_data/combined_cycle_power_plant/"
     filter_data(rank_file_path, data_file_path, args.percentage, output_path)
 
 if __name__ == "__main__":

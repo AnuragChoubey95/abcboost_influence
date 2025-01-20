@@ -3,8 +3,9 @@ import numpy as np
 import re
 from collections import defaultdict
 import time
+import argparse
 
-def preprocess_loss_directory(loss_dir):
+def preprocess_loss_directory(loss_dir, substring):
     """
     Preprocess the directory to extract unique columns and percentages.
 
@@ -23,7 +24,7 @@ def preprocess_loss_directory(loss_dir):
 
     # Extract columns, percentages, and categorize files
     for file in os.listdir(loss_dir):
-        if file.endswith(".csv"):
+        if file.endswith(".csv") and substring in file:
             # Extract column and percentage from filename
             column_match = re.search(r"column(\d+)", file)
             percentage_match = re.search(r"filtered_(\d+(\.\d+)?)%", file)
@@ -43,7 +44,8 @@ def preprocess_loss_directory(loss_dir):
 
     return unique_columns, unique_percentages, loss_files
 
-def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_files):
+
+def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_files, substring):
     """
     Compare losses for BoostIn and LCA methods with the original loss file and rank them.
 
@@ -78,10 +80,10 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_f
     # Compare losses for each method and each percentage
     for method in ["BoostIn", "LCA"]:
         print(f"\nProcessing method: {method}")
-        time.sleep(0.5)
+        # time.sleep(0.5)
         for percentage in unique_percentages:
             print(f"  Processing percentage: {percentage}%")
-            time.sleep(0.5)
+            # time.sleep(0.5)
             for file in loss_files[method]:
                 # Ensure the file corresponds to the percentage
                 percentage_str = f"filtered_{percentage:.1f}%".rstrip(".0%")
@@ -112,7 +114,7 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_f
                     print(f"      Original Loss: {original_loss:.6f}")
                     print(f"      Current Loss: {current_loss:.6f}")
                     print(f"      Delta Loss: {delta_loss:.6f}")
-                    time.sleep(0.5)
+                    # time.sleep(0.5)
 
                     # Store the results
                     comparison_results[method][percentage].append(delta_loss)
@@ -127,31 +129,47 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_f
             avg_delta = np.mean(deltas) if deltas else 0
             avg_increase[method][percentage] = avg_delta
 
-    print("\nRanking Methods by Average Loss Increase:")
-    method_ranking = []
-    for percentage in unique_percentages:
-        boostin_avg = avg_increase["BoostIn"].get(percentage, 0)
-        lca_avg = avg_increase["LCA"].get(percentage, 0)
-        print(f"  Percentage {percentage}%:")
-        print(f"    BoostIn Average Loss Increase: {boostin_avg:.6f}")
-        print(f"    LCA Average Loss Increase: {lca_avg:.6f}")
-        if boostin_avg < lca_avg:
-            method_ranking.append((percentage, "LCA", lca_avg))
-        else:
-            method_ranking.append((percentage, "BoostIn", boostin_avg))
+    with open("../statistics.txt", "a") as f:  # Open the file in append mode
+        f.write(f"\nSubstring: {substring} || Sample Size of Test Indices: 20\n")
+        print("\nRanking Methods by Average Loss Increase:")
+        f.write("\nRanking Methods by Average Loss Increase:\n")
+        method_ranking = []
+        for percentage in unique_percentages:
+            boostin_avg = avg_increase["BoostIn"].get(percentage, 0)
+            lca_avg = avg_increase["LCA"].get(percentage, 0)
+            print(f"  Percentage {percentage}%:")
+            print(f"    BoostIn Average Loss Increase: {boostin_avg:.6f}")
+            print(f"    LCA Average Loss Increase: {lca_avg:.6f}")
+            f.write(f"\n  Percentage {percentage}%:")
+            f.write(f"\n    BoostIn Average Loss Increase: {boostin_avg:.6f}")
+            f.write(f"\n    LCA Average Loss Increase: {lca_avg:.6f}")
+            if boostin_avg < lca_avg:
+                method_ranking.append((percentage, "LCA", lca_avg))
+            else:
+                method_ranking.append((percentage, "BoostIn", boostin_avg))
+        f.write("\n-----------------------")
+        print("\nFinal Rankings by Percentage:")
+        f.write("\nFinal Rankings by Percentage:\n")
+        f.write(f"\nSubstring: {substring} || Sample Size of Test Indices: 20\n")  # Write the substring
+        for rank in method_ranking:
+            ranking_line = f"  Percentage {rank[0]}%: Best Method: {rank[1]}, Average Loss Increase: {rank[2]:.6f}"
+            print(ranking_line)  # Print to console
+            f.write(ranking_line + "\n")  # Write to file
+        f.write("\n--------------------------------------------------------------------------------------------")
 
-    print("\nFinal Rankings by Percentage:")
-    for rank in method_ranking:
-        print(f"  Percentage {rank[0]}%: Best Method: {rank[1]}, Average Loss Increase: {rank[2]:.6f}")
 
-    return avg_increase, method_ranking
 
 def main():
+    parser = argparse.ArgumentParser(description="Process loss files based on a substring.")
+    parser.add_argument("substring", type=str, help="Substring to filter filenames.")
+    args = parser.parse_args()
+    substring = args.substring
+
     # Directory containing loss files
     loss_dir = "../loss_comp/"
 
     # Preprocess the directory
-    unique_columns, unique_percentages, loss_files = preprocess_loss_directory(loss_dir)
+    unique_columns, unique_percentages, loss_files = preprocess_loss_directory(loss_dir, substring)
 
     # Print unique columns and percentages
     print(f"Unique Columns: {sorted(unique_columns)}")
@@ -159,7 +177,7 @@ def main():
     time.sleep(0.5)
 
     # Compare losses and rank methods
-    avg_increase, method_ranking = compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_files)
+    compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_files, substring)
 
 if __name__ == "__main__":
     main()

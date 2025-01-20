@@ -1,3 +1,11 @@
 build/
 influence_scores/
-data/
+models/
+logs/
+predictions/
+custom_data/
+loss_comp/
+abcboost*
+*.model
+*.log
+*.prediction

@@ -1,0 +1,91 @@
+--------------------------------------------------------------------------------------------
+Dataset: concrete || Sample Size of Test Indices: 20
+
+Ranking Methods by Average Loss Increase:
+
+  Percentage 0.5%:
+    BoostIn Average Loss Increase: 0.023126
+    LCA Average Loss Increase: 0.031386
+  Percentage 1.5%:
+    BoostIn Average Loss Increase: 0.022238
+    LCA Average Loss Increase: 0.021341
+  Percentage 2.0%:
+    BoostIn Average Loss Increase: 0.030162
+    LCA Average Loss Increase: 0.028671
+  Percentage 0.1%:
+    BoostIn Average Loss Increase: 0.031545
+    LCA Average Loss Increase: 0.031546
+  Percentage 1.0%:
+    BoostIn Average Loss Increase: 0.020486
+    LCA Average Loss Increase: 0.024751
+-----------------------
+Final Rankings by Percentage:
+
+Substring: concrete || Sample Size of Test Indices: 20
+  Percentage 0.5%: Best Method: LCA, Average Loss Increase: 0.031386
+  Percentage 1.5%: Best Method: BoostIn, Average Loss Increase: 0.022238
+  Percentage 2.0%: Best Method: BoostIn, Average Loss Increase: 0.030162
+  Percentage 0.1%: Best Method: LCA, Average Loss Increase: 0.031546
+  Percentage 1.0%: Best Method: LCA, Average Loss Increase: 0.024751
+
+--------------------------------------------------------------------------------------------
+Dataset: comp_cpu || Sample Size of Test Indices: 20
+
+Ranking Methods by Average Loss Increase:
+
+  Percentage 0.5%:
+    BoostIn Average Loss Increase: -0.000322
+    LCA Average Loss Increase: -0.000192
+  Percentage 1.0%:
+    BoostIn Average Loss Increase: -0.000283
+    LCA Average Loss Increase: -0.000253
+  Percentage 2.0%:
+    BoostIn Average Loss Increase: -0.000306
+    LCA Average Loss Increase: -0.000130
+  Percentage 0.1%:
+    BoostIn Average Loss Increase: -0.000180
+    LCA Average Loss Increase: -0.000069
+  Percentage 1.5%:
+    BoostIn Average Loss Increase: -0.000226
+    LCA Average Loss Increase: -0.000305
+-----------------------
+Final Rankings by Percentage:
+
+Dataset: comp_cpu || Sample Size of Test Indices: 20
+  Percentage 0.5%: Best Method: LCA, Average Loss Increase: -0.000192
+  Percentage 1.0%: Best Method: LCA, Average Loss Increase: -0.000253
+  Percentage 2.0%: Best Method: LCA, Average Loss Increase: -0.000130
+  Percentage 0.1%: Best Method: LCA, Average Loss Increase: -0.000069
+  Percentage 1.5%: Best Method: BoostIn, Average Loss Increase: -0.000226
+
+--------------------------------------------------------------------------------------------
+Dataset: combined_cycle_power_plant || Sample Size of Test Indices: 20
+
+Ranking Methods by Average Loss Increase:
+
+  Percentage 0.1%:
+    BoostIn Average Loss Increase: -0.000148
+    LCA Average Loss Increase: -0.000205
+  Percentage 1.5%:
+    BoostIn Average Loss Increase: -0.000328
+    LCA Average Loss Increase: -0.000191
+  Percentage 2.0%:
+    BoostIn Average Loss Increase: -0.000326
+    LCA Average Loss Increase: -0.000111
+  Percentage 1.0%:
+    BoostIn Average Loss Increase: -0.000365
+    LCA Average Loss Increase: -0.000220
+  Percentage 0.5%:
+    BoostIn Average Loss Increase: -0.000352
+    LCA Average Loss Increase: -0.000107
+-----------------------
+Final Rankings by Percentage:
+
+Substring: combined_cycle_power_plant || Sample Size of Test Indices: 20
+  Percentage 0.1%: Best Method: BoostIn, Average Loss Increase: -0.000148
+  Percentage 1.5%: Best Method: LCA, Average Loss Increase: -0.000191
+  Percentage 2.0%: Best Method: LCA, Average Loss Increase: -0.000111
+  Percentage 1.0%: Best Method: LCA, Average Loss Increase: -0.000220
+  Percentage 0.5%: Best Method: LCA, Average Loss Increase: -0.000107
+
+--------------------------------------------------------------------------------------------
