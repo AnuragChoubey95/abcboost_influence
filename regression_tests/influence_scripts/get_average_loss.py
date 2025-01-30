@@ -39,7 +39,7 @@ def preprocess_loss_directory(loss_dir, substring):
                 loss_files["BoostIn"].append(file)
             elif "LCA" in file:
                 loss_files["LCA"].append(file)
-            elif file == "comp_cpu.train.csv_regression_J20_v0.1_p2.model_test_sample_losses.csv":
+            elif file == f"{substring}.train.csv_regression_J20_v0.1_p2.model_test_sample_losses.csv":
                 loss_files["original"].append(file)
 
     return unique_columns, unique_percentages, loss_files
@@ -64,7 +64,7 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_f
     }
 
     # Load the original loss file
-    original_loss_file = "comp_cpu.train.csv_regression_J20_v0.1_p2.model_test_sample_losses.csv"
+    original_loss_file = f"{substring}.train.csv_regression_J20_v0.1_p2.model_test_sample_losses.csv"
     print(f"Loading original loss file: {original_loss_file}")
     time.sleep(0.5)
     original_data = np.loadtxt(os.path.join(loss_dir, original_loss_file), delimiter=',')
@@ -103,6 +103,9 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_f
 
                 # Find the matching index in the original file
                 if column_index in losses_indices:
+                    if column_index not in original_indices:
+                        print(f"Error: Column index {column_index} not found in original indices.")
+                        # continue
                     idx_in_original = np.where(original_indices == column_index)[0][0]
                     idx_in_losses = np.where(losses_indices == column_index)[0][0]
 
@@ -130,7 +133,7 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_f
             avg_increase[method][percentage] = avg_delta
 
     with open("../statistics.txt", "a") as f:  # Open the file in append mode
-        f.write(f"\nSubstring: {substring} || Sample Size of Test Indices: 20\n")
+        f.write(f"\nSubstring: {substring} || Sample Size of Test Indices: {len(unique_columns)}\n")
         print("\nRanking Methods by Average Loss Increase:")
         f.write("\nRanking Methods by Average Loss Increase:\n")
         method_ranking = []
@@ -150,7 +153,7 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_f
         f.write("\n-----------------------")
         print("\nFinal Rankings by Percentage:")
         f.write("\nFinal Rankings by Percentage:\n")
-        f.write(f"\nSubstring: {substring} || Sample Size of Test Indices: 20\n")  # Write the substring
+        f.write(f"\nSubstring: {substring} || Sample Size of Test Indices: {len(unique_columns)}\n")  # Write the substring
         for rank in method_ranking:
             ranking_line = f"  Percentage {rank[0]}%: Best Method: {rank[1]}, Average Loss Increase: {rank[2]:.6f}"
             print(ranking_line)  # Print to console
@@ -166,7 +169,7 @@ def main():
     substring = args.substring
 
     # Directory containing loss files
-    loss_dir = "../loss_comp/"
+    loss_dir = os.path.join(os.path.dirname(__file__), "../loss_comp/")
 
     # Preprocess the directory
     unique_columns, unique_percentages, loss_files = preprocess_loss_directory(loss_dir, substring)

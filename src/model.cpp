@@ -755,14 +755,13 @@ void Regression::test() {
   int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
   int n_testing = data->n_data; // Number of test samples
 
-  bool getInfluence = false; //Flag: Compute Influence?
+  bool getInfluence = true; //Flag: Compute Influence?
   InfluenceType inf = InfluenceType::BOOST_IN_LCA; //What method of influence?
   
   std::vector<std::vector<double>> influenceMatrix(
       n_training,
       std::vector<double>(n_testing, 0.0));
 
-   //IS THIS CORRECT? Think on Jan 15-16
   std::vector<std::vector<double>> lca_predictions(n_training, std::vector<double>(n_testing, 0));
 
   for (int m = 0; m < config->model_n_iterations; m++) {
@@ -801,10 +800,21 @@ void Regression::test() {
   if(getInfluence){
     // Time the I/O operation
     io_timer.restart();
+    // Open a CSV file for writing test sample losses
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) == NULL) {
+        perror("getcwd() error");
+        return;
+    }
 
+    // Get the absolute path and append `loss_comp`
+    std::string basePath(cwd);
+    std::cout << basePath << std::endl;
+    std::string infScorePath = basePath + "/regression_tests/influence_scores/";
     // Write the BoostIn matrix to the CSV file
     std::string extension = inf == InfluenceType::BOOST_IN ? "BoostIn_Influence" : "LCA_Influence";
-    std::string influence_file = "./influence_scores/"  + config->formatted_output_name + extension + ".csv";
+    std::string influence_file = infScorePath + config->formatted_output_name + extension + ".csv";
+
     FILE *csv_file = fopen(influence_file.c_str(), "w");
     if (csv_file == NULL) {
       perror("Error opening influence file");
@@ -832,17 +842,32 @@ void Regression::test() {
    
   }
   // Open a CSV file for writing test sample losses
-  std::cout << "Writing losses to " << config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;
-  std::string losses_file = "./loss_comp/"  + config->model_pretrained_path + "_test_sample_losses.csv";
+  char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) == NULL) {
+        perror("getcwd() error");
+        return;
+    }
+
+  // Get the absolute path and append `loss_comp`
+  std::string basePath(cwd);
+  std::string lossCompPath = basePath + "/loss_comp/";
+  // // Check if `lossCompPath` already contains `/regression_tests/`
+  if (lossCompPath.find("/regression_tests/") == std::string::npos) {
+      lossCompPath = basePath + "/regression_tests/loss_comp/";
+  } 
+
+  std::cout << "Writing losses to " << lossCompPath + config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;
+  std::string losses_file = lossCompPath + config->model_pretrained_path + "_test_sample_losses.csv";
   FILE *losses_csv = fopen(losses_file.c_str(), "w");
   if (losses_csv == NULL) {
+      std::cout << lossCompPath << std::endl;
       perror("Error opening losses file");
       return;
   }
 
   // Write losses for each test sample
   for (int i = 0; i < test_sample_losses.size(); i++) {
-      fprintf(losses_csv, "%d,%.6f\n", i, test_sample_losses[i]);
+      fprintf(losses_csv, "%d,%.9f\n", i, test_sample_losses[i]);
   }
 
   // Close the file
@@ -1156,6 +1181,7 @@ void BinaryMart::updateF(Tree *tree) {
   }
   tree->freeMemory();
 }
+
 void BinaryMart::computeHessianResidual() {
 #pragma omp parallel for schedule(static)
   for (unsigned int i = 0; i < data->n_data; ++i) {
@@ -1173,6 +1199,7 @@ void BinaryMart::init() {
   GradientBoosting::init();
   F.resize(data->n_data);
 }
+
 double BinaryMart::getAccuracy() {
   double accuracy = 0.0;
 #pragma omp parallel for reduction(+ : accuracy)

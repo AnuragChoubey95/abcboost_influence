@@ -147,7 +147,7 @@ class Regression : public GradientBoosting {
      int test_index,
       int t,
         std::vector<std::vector<double>>* boostInMatrix); //<<++ MY CHANGE
-  void calculateBoostInInfluence_LCA(
+  void calculateBoostInInfluence_LCA( //<<++ MY CHANGE
   int train_index,
   int test_index,
   int t, 
