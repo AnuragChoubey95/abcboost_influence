@@ -311,12 +311,12 @@ void Tree::buildTree(std::vector<uint> *ids, std::vector<uint> *fids) {
     }
     split(idx, l);
     // Calculate the depth of the new nodes
-    nodes[l].depth = nodes[idx].depth + 1;
-    nodes[r].depth = nodes[idx].depth + 1;
+    nodes[l].depth = nodes[idx].depth + 1; //<<++ MY CHANGE
+    nodes[r].depth = nodes[idx].depth + 1; //<<++ MY CHANGE
 
     // Update the maximum tree depth
-    treeDepth = std::max(treeDepth, nodes[l].depth);
-    treeDepth = std::max(treeDepth, nodes[r].depth);
+    treeDepth = std::max(treeDepth, nodes[l].depth); //<<++ MY CHANGE
+    treeDepth = std::max(treeDepth, nodes[r].depth); //<<++ MY CHANGE
     lsz = nodes[l].end - nodes[l].start, rsz = nodes[r].end - nodes[r].start;
 
     if (lsz < msz && rsz < msz) {
@@ -479,6 +479,7 @@ void Tree::init(
 void Tree::populateTree(FILE *fileptr) {
   int n_nodes = 0;
   size_t ret = fread(&n_nodes, sizeof(n_nodes), 1, fileptr);
+  
   // Resize the nodes vector to accommodate the actual number of nodes
   nodes.resize(n_nodes);
 
@@ -512,25 +513,32 @@ void Tree::populateTree(FILE *fileptr) {
     nodes[n] = node;
   }
 
-  int train_leaf_indices_size = 0; //<<++MY CHANGE
-  ret += fread(&train_leaf_indices_size, sizeof(train_leaf_indices_size), 1, fileptr); //<<++MY CHANGE
-  train_leaf_indices.resize(train_leaf_indices_size); //<<++MY CHANGE
-  ret += fread(train_leaf_indices.data(), sizeof(int), train_leaf_indices_size, fileptr); //<<++MY CHANGE
+  if (n_nodes > 0){
+    int train_leaf_indices_size = 0; //<<++MY CHANGE
+    ret += fread(&train_leaf_indices_size, sizeof(train_leaf_indices_size), 1, fileptr); //<<++MY CHANGE
+    train_leaf_indices.resize(train_leaf_indices_size); //<<++MY CHANGE
+    ret += fread(train_leaf_indices.data(), sizeof(int), train_leaf_indices_size, fileptr); //<<++MY CHANGE
 
-  int train_sample_residuals_size = 0; //<<++MY CHANGE
-  ret += fread(&train_sample_residuals_size, sizeof(train_sample_residuals_size), 1, fileptr); //<<++MY CHANGE
-  train_sample_residuals.resize(train_sample_residuals_size); //<<++MY CHANGE
-  ret += fread(train_sample_residuals.data(), sizeof(double), train_sample_residuals_size, fileptr); //<<++MY CHANGE
+    int train_sample_residuals_size = 0; //<<++MY CHANGE
+    ret += fread(&train_sample_residuals_size, sizeof(train_sample_residuals_size), 1, fileptr); //<<++MY CHANGE
+    train_sample_residuals.resize(train_sample_residuals_size); //<<++MY CHANGE
+    ret += fread(train_sample_residuals.data(), sizeof(double), train_sample_residuals_size, fileptr); //<<++MY CHANGE
 
-  int train_sample_hessians_size = 0; //<<++MY CHANGE
-  ret += fread(&train_sample_hessians_size, sizeof(train_sample_hessians_size), 1, fileptr); //<<++MY CHANGE
-  train_sample_hessians.resize(train_sample_hessians_size); //<<++MY CHANGE
-  ret += fread(train_sample_hessians.data(), sizeof(double), train_sample_hessians_size, fileptr); //<<++MY CHANGE
+    int train_sample_hessians_size = 0; //<<++MY CHANGE
+    ret += fread(&train_sample_hessians_size, sizeof(train_sample_hessians_size), 1, fileptr); //<<++MY CHANGE
+    train_sample_hessians.resize(train_sample_hessians_size); //<<++MY CHANGE
+    ret += fread(train_sample_hessians.data(), sizeof(double), train_sample_hessians_size, fileptr); //<<++MY CHANGE
 
-  // Assert correctness of loaded sizes
-  assert(train_leaf_indices_size == train_sample_residuals_size && //<<++MY CHANGE
-         train_sample_residuals_size == train_sample_hessians_size && //<<++MY CHANGE
-         "Mismatch in sizes of loaded sample-related data structures!"); //<<++MY CHANGE
+    // std::cout << "Train leaf indices size: " << train_leaf_indices_size << std::endl;
+    // std::cout << "Train sample residuals size: " << train_sample_residuals_size << std::endl;
+    // std::cout << "Train sample hessians size: " << train_sample_hessians_size << std::endl;
+    // std::cout << "\n";
+
+    // Assert correctness of loaded sizes
+    assert(train_leaf_indices_size == train_sample_residuals_size && //<<++MY CHANGE
+          train_sample_residuals_size == train_sample_hessians_size && //<<++MY CHANGE
+          "Mismatch in sizes of loaded sample-related data structures!"); //<<++MY CHANGE
+  }
 }
 
 
@@ -615,6 +623,11 @@ void Tree::regress() {
   this->train_sample_residuals.resize(data->n_data, 0.0);   //<<++MY CHANGE
   this->train_sample_hessians.resize(data->n_data, 0.0);    //<<++MY CHANGE
 
+   // Assert correctness of initialized sizes
+  assert(train_leaf_indices.size() == train_sample_residuals.size() && //<<++MY CHANGE
+         train_sample_residuals.size() == train_sample_hessians.size() && //<<++MY CHANGE
+         "Mismatch in sizes of initialized sample-related data structures!"); //<<++MY CHANGE
+
   double correction = 1.0;
   if (data->data_header.n_classes != 1 && config->model_name.size() >= 3 &&
       config->model_name.substr(0, 3) != "abc")
@@ -664,6 +677,7 @@ void Tree::regress() {
 void Tree::saveTree(FILE *fp) {
   // Save the number of nodes
   int n = nodes.size();
+  // std::cout << "nodes.size: " << n << std::endl;
   fwrite(&n, sizeof(n), 1, fp);
 
   // Save the details of each node
@@ -694,6 +708,11 @@ void Tree::saveTree(FILE *fp) {
   fwrite(&train_sample_hessians_size, sizeof(train_sample_hessians_size), 1, fp); //<<++ MY CHANGE
 
   fwrite(train_sample_hessians.data(), sizeof(double), train_sample_hessians_size, fp); //<<++ MY CHANGE
+
+  // Assert correctness of saved sizes
+  assert(train_leaf_indices_size == train_sample_residuals_size && //<<++MY CHANGE
+         train_sample_residuals_size == train_sample_hessians_size && //<<++MY CHANGE
+         "Mismatch in sizes of saved sample-related data structures!"); //<<++MY CHANGE
 }
 
 

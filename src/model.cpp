@@ -79,6 +79,7 @@ GradientBoosting::~GradientBoosting() {
 }
 
 void GradientBoosting::print_test_message(int iter,double iter_time,int& low_err){
+  std::cout << " test msg GradBoost ";
   if(config->no_label)
     return;
   double loss = getLoss();
@@ -283,7 +284,6 @@ void GradientBoosting::init() {
   H_tmp.resize(data->n_data);
   ids_tmp.resize(data->n_data);
   this->test_sample_losses.resize(data->n_data); //<<++ MY CHANGE
-
 }
 
 /**
@@ -322,6 +322,7 @@ int GradientBoosting::getError() {
  * @return summed CE loss over training set.
  */
 double GradientBoosting::getLoss() {
+  std::cout << " get loss GradBoost ";
   double loss = 0.0;
   if(data->data_header.n_classes == 2){
     #pragma omp parallel for reduction(+ : loss)
@@ -684,6 +685,7 @@ void Regression::print_train_message(int iter,double loss,double iter_time){
 }
 
 void Regression::print_test_message(int iter,double iter_time,double& low_loss){
+  std::cout << " test msg Regr ";
   if(config->no_label)
     return;
   double loss = 0;
@@ -755,13 +757,14 @@ void Regression::test() {
   int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
   int n_testing = data->n_data; // Number of test samples
 
-  bool getInfluence = true; //Flag: Compute Influence?
+  bool getInfluence = false; //Flag: Compute Influence?
   InfluenceType inf = InfluenceType::BOOST_IN_LCA; //What method of influence?
   
   std::vector<std::vector<double>> influenceMatrix(
       n_training,
       std::vector<double>(n_testing, 0.0));
 
+   //IS THIS CORRECT? Think on Jan 15-16
   std::vector<std::vector<double>> lca_predictions(n_training, std::vector<double>(n_testing, 0));
 
   for (int m = 0; m < config->model_n_iterations; m++) {
@@ -851,12 +854,12 @@ void Regression::test() {
   // Get the absolute path and append `loss_comp`
   std::string basePath(cwd);
   std::string lossCompPath = basePath + "/loss_comp/";
-  // // Check if `lossCompPath` already contains `/regression_tests/`
+  // Check if `lossCompPath` already contains `/regression_tests/`
   if (lossCompPath.find("/regression_tests/") == std::string::npos) {
       lossCompPath = basePath + "/regression_tests/loss_comp/";
   } 
-
-  std::cout << "Writing losses to " << lossCompPath + config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;
+  
+  std::cout << "Writing losses to " << config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;
   std::string losses_file = lossCompPath + config->model_pretrained_path + "_test_sample_losses.csv";
   FILE *losses_csv = fopen(losses_file.c_str(), "w");
   if (losses_csv == NULL) {
@@ -867,7 +870,7 @@ void Regression::test() {
 
   // Write losses for each test sample
   for (int i = 0; i < test_sample_losses.size(); i++) {
-      fprintf(losses_csv, "%d,%.9f\n", i, test_sample_losses[i]);
+      fprintf(losses_csv, "%d,%.6f\n", i, test_sample_losses[i]);
   }
 
   // Close the file
@@ -1086,8 +1089,6 @@ int Regression::loadModel() { return GradientBoosting::loadModel(); }
 void Regression::saveModel(int iter) { GradientBoosting::saveModel(iter); }
 
 
-
-
 BinaryMart::BinaryMart(Data *data, Config *config) : GradientBoosting(data, config) {}
 
 void BinaryMart::savePrediction() {
@@ -1239,6 +1240,7 @@ double BinaryMart::getLoss() {
 }
 
 void BinaryMart::train() {
+  // std::cout<< "BinaryMart::train() called ";
   // set up buffers for OpenMP  
   std::vector<std::vector<std::vector<unsigned int>>> buffer =
       GradientBoosting::initBuffer();
@@ -1446,6 +1448,7 @@ void Mart::computeHessianResidual() {
  * @return final training iteration of loaded model.
  */
 int GradientBoosting::loadModel() {
+  // std::cout << "GradientBoosting::loadModel() called\n";
   FILE *fp = fopen(config->model_pretrained_path.c_str(), "rb");
   if (fp == NULL) return -1;
   // retrieve trees
@@ -1461,7 +1464,8 @@ void GradientBoosting::serializeTrees(FILE *fp, int M) {
   Utils::serialize(fp, K);
   for (int i = 0; i < M; ++i)
     for (int j = 0; j < K; ++j) {
-      if (additive_trees[i][j] == nullptr) {
+      if (additive_trees[i][j] == nullptr) { //IT'S SOMEWHERE HERE...Feb 2nd 2025
+        assert(j==1 && "Huh?");
         int n = 0;
         fwrite(&n, sizeof(n), 1, fp);
         continue;
@@ -1493,7 +1497,7 @@ void GradientBoosting:: deserializeTrees(FILE *fp) {
         continue;
       }
       additive_trees[i][j] = std::unique_ptr<Tree>(new Tree(data, config));
-      additive_trees[i][j]->populateTree(fp);
+      additive_trees[i][j]->populateTree(fp); 
     }
   }
 }

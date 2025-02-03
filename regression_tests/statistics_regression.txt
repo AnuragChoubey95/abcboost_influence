@@ -179,6 +179,7 @@ Substring: energy_efficiency || Sample Size of Test Indices: 100
   Percentage 0.5%: Best Method: BoostIn, Average Loss Increase: 0.000038
 
 --------------------------------------------------------------------------------------------
+
 Substring: naval || Sample Size of Test Indices: 100
 
 Ranking Methods by Average Loss Increase:
@@ -186,26 +187,26 @@ Ranking Methods by Average Loss Increase:
   Percentage 0.5%:
     BoostIn Average Loss Increase: 0.000000
     LCA Average Loss Increase: 0.000000
-  Percentage 1.0%:
-    BoostIn Average Loss Increase: 0.000000
+  Percentage 1.5%:
+    BoostIn Average Loss Increase: -0.000000
     LCA Average Loss Increase: 0.000000
   Percentage 2.0%:
     BoostIn Average Loss Increase: 0.000000
-    LCA Average Loss Increase: 0.000000
+    LCA Average Loss Increase: -0.000000
   Percentage 0.1%:
-    BoostIn Average Loss Increase: 0.000000
+    BoostIn Average Loss Increase: -0.000000
     LCA Average Loss Increase: 0.000000
-  Percentage 1.5%:
+  Percentage 1.0%:
     BoostIn Average Loss Increase: 0.000000
-    LCA Average Loss Increase: 0.000000
+    LCA Average Loss Increase: -0.000000
 -----------------------
 Final Rankings by Percentage:
 
 Substring: naval || Sample Size of Test Indices: 100
   Percentage 0.5%: Best Method: BoostIn, Average Loss Increase: 0.000000
-  Percentage 1.0%: Best Method: BoostIn, Average Loss Increase: 0.000000
+  Percentage 1.5%: Best Method: LCA, Average Loss Increase: 0.000000
   Percentage 2.0%: Best Method: BoostIn, Average Loss Increase: 0.000000
-  Percentage 0.1%: Best Method: BoostIn, Average Loss Increase: 0.000000
-  Percentage 1.5%: Best Method: BoostIn, Average Loss Increase: 0.000000
+  Percentage 0.1%: Best Method: LCA, Average Loss Increase: 0.000000
+  Percentage 1.0%: Best Method: BoostIn, Average Loss Increase: 0.000000
 
 --------------------------------------------------------------------------------------------

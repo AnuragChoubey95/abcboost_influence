@@ -52,9 +52,11 @@ int main(int argc, char* argv[]) {
 
   if (config->model_name == "mart" || config->model_name == "robustlogit") {
     if(data->data_header.n_classes == 2){
+      // std::cout << "new ABCBoost::BinaryMart model\n";
       model = std::unique_ptr<ABCBoost::GradientBoosting>(
           new ABCBoost::BinaryMart(data.get(), config.get()));
     }else{
+      // std::cout << "new ABCBoost::Mart model\n";
       model = std::unique_ptr<ABCBoost::GradientBoosting>(
           new ABCBoost::Mart(data.get(), config.get()));
     }
