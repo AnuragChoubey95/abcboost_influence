@@ -154,7 +154,6 @@ class Regression : public GradientBoosting {
   double* lca_prediction_t_j_i,
   std::vector<std::vector<double>>* boostInMatrix_LCA);
   double getLSLoss();
-  double getLSLossDerivative(int instance_id); //<<++ MY CHANGE
   double getL1Loss();
   double getLpLoss(const double p);
   double getHuberLoss();
@@ -178,6 +177,17 @@ class BinaryMart : public GradientBoosting {
 
  private:
   void computeHessianResidual();
+  void calculateBoostInInfluence(
+    int train_index,
+     int test_index,
+      int t,
+        std::vector<std::vector<double>>* boostInMatrix); //<<++ MY CHANGE
+  void calculateBoostInInfluence_LCA( //<<++ MY CHANGE
+  int train_index,
+  int test_index,
+  int t, 
+  double* lca_prediction_t_j_i,
+  std::vector<std::vector<double>>* boostInMatrix_LCA);
 	double getAccuracy();
 	int getError();
 };
