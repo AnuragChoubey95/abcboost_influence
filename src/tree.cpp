@@ -282,7 +282,6 @@ void Tree::buildTree(std::vector<uint> *ids, std::vector<uint> *fids) {
       sparse_fids.push_back(fid);
   }
 
-
   nodes[0].idx = 0;
   nodes[0].start = 0;
   nodes[0].end = ids->size();
@@ -340,6 +339,12 @@ void Tree::buildTree(std::vector<uint> *ids, std::vector<uint> *fids) {
   regress();
   in_leaf.resize(0);
   in_leaf.shrink_to_fit();
+
+  // Precompute exp_sum = e^0 + e^1 + ... + e^treeDepth
+  exp_sum = 0.0;
+  for (int d = 0; d <= treeDepth; ++d) {
+      exp_sum += std::exp(d);
+  }
 }
 
 void Tree::updateFeatureImportance(int iter) {
@@ -514,6 +519,8 @@ void Tree::populateTree(FILE *fileptr) {
   }
 
   if (n_nodes > 0){
+    ret += fread(&exp_sum, sizeof(exp_sum), 1, fileptr);
+
     int train_leaf_indices_size = 0; //<<++MY CHANGE
     ret += fread(&train_leaf_indices_size, sizeof(train_leaf_indices_size), 1, fileptr); //<<++MY CHANGE
     train_leaf_indices.resize(train_leaf_indices_size); //<<++MY CHANGE
@@ -693,6 +700,8 @@ void Tree::saveTree(FILE *fp) {
     fwrite(&node.sum_residuals, sizeof(node.sum_residuals), 1, fp);
     fwrite(&node.sum_hessians, sizeof(node.sum_hessians), 1, fp);
   }
+
+  fwrite(&exp_sum, sizeof(exp_sum), 1, fp);
 
   int train_leaf_indices_size = train_leaf_indices.size(); //<<++ MY CHANGE
   fwrite(&train_leaf_indices_size, sizeof(train_leaf_indices_size), 1, fp); //<<++ MY CHANGE

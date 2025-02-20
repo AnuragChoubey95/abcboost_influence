@@ -16,7 +16,8 @@
 #include <sys/stat.h>
 #include <algorithm>
 #include <iostream>
-#include <limits>
+#include <limits.h>
+#include <unistd.h>
 #include <numeric>
 #include <sstream>
 #include <string>
@@ -744,7 +745,6 @@ void Regression::print_test_message(int iter,double iter_time,double& low_loss){
  * in the individual method-comments.
  */
 void Regression::test() {
-
   std::vector<std::vector<std::vector<unsigned int>>> buffer =
       GradientBoosting::initBuffer();
 
@@ -812,7 +812,7 @@ void Regression::test() {
     // Get the absolute path and append `loss_comp`
     std::string basePath(cwd);
     std::cout << basePath << std::endl;
-    std::string infScorePath = basePath + "/regression_tests/influence_scores/";
+    std::string infScorePath = basePath + "/single_test_removal/influence_scores/";
     // Write the BoostIn matrix to the CSV file
     std::string extension = inf == InfluenceType::BOOST_IN ? "BoostIn_Influence" : "LCA_Influence";
     std::string influence_file = infScorePath + config->formatted_output_name + extension + ".csv";
@@ -822,7 +822,6 @@ void Regression::test() {
       perror("Error opening influence file");
       return;
     }
-
 
     // Write BoostIn influence scores
     for (int j = 0; j < n_training; j++) {
@@ -851,9 +850,9 @@ void Regression::test() {
   // Get the absolute path and append `loss_comp`
   std::string basePath(cwd);
   std::string lossCompPath = basePath + "/loss_comp/";
-  // Check if `lossCompPath` already contains `/regression_tests/`
-  if (lossCompPath.find("/regression_tests/") == std::string::npos) {
-      lossCompPath = basePath + "/regression_tests/loss_comp/";
+  // Check if `lossCompPath` already contains `/single_test_removal/`
+  if (lossCompPath.find("/single_test_removal/") == std::string::npos) {
+      lossCompPath = basePath + "/single_test_removal/loss_comp/";
   } 
   
   std::cout << "Writing losses to " << config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;
@@ -1140,6 +1139,7 @@ void BinaryMart::returnPrediction(double* prediction,double* probability) {
 }
 
 void BinaryMart::test() {
+  // std::cout << "BinaryMart::test()" << std::endl;
   std::vector<std::vector<std::vector<unsigned int>>> buffer =
       GradientBoosting::initBuffer();
 
@@ -1152,7 +1152,7 @@ void BinaryMart::test() {
   int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
   int n_testing = data->n_data; // Number of test samples
 
-  bool getInfluence = true; //Flag: Compute Influence?
+  bool getInfluence = false; //Flag: Compute Influence?
   InfluenceType inf = InfluenceType::BOOST_IN_LCA; //What method of influence?
   
   std::vector<std::vector<double>> influenceMatrix(
@@ -1202,7 +1202,7 @@ void BinaryMart::test() {
     // Get the absolute path and append `loss_comp`
     std::string basePath(cwd);
     std::cout << basePath << std::endl;
-    std::string infScorePath = basePath + "/regression_tests/influence_scores/";
+    std::string infScorePath = basePath + "/single_test_removal/influence_scores/";
     // Write the BoostIn matrix to the CSV file
     std::string extension = inf == InfluenceType::BOOST_IN ? "BoostIn_Influence" : "LCA_Influence";
     std::string influence_file = infScorePath + config->formatted_output_name + extension + ".csv";
@@ -1238,9 +1238,9 @@ void BinaryMart::test() {
   }
   std::string basePath(cwd);
   std::string lossCompPath = basePath + "/loss_comp/";
-  // Check if `lossCompPath` already contains `/regression_tests/`
-  if (lossCompPath.find("/regression_tests/") == std::string::npos) {
-      lossCompPath = basePath + "/regression_tests/loss_comp/";
+  // Check if `lossCompPath` already contains `/single_test_removal/`
+  if (lossCompPath.find("/single_test_removal/") == std::string::npos) {
+      lossCompPath = basePath + "/single_test_removal/loss_comp/";
   } 
   
   std::cout << "Writing losses to " << config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;
@@ -1297,6 +1297,7 @@ void BinaryMart::calculateBoostInInfluence_LCA(
   int test_leaf_index = additive_trees[t][0]->test_leaf_indices[test_index];
 
   int lcaNodeIdx = additive_trees[t][0]->findLCA(train_leaf_index,test_leaf_index);
+  double lcaNodeWt = additive_trees[t][0]->calculateDepthWeight(lcaNodeIdx);
   assert(lcaNodeIdx != -1 && "LCA computation failed: LCA index is -1");
 
   double lcaPredict_v = additive_trees[t][0]->nodes[lcaNodeIdx].predict_v;
@@ -1310,7 +1311,7 @@ void BinaryMart::calculateBoostInInfluence_LCA(
   double eta = config->model_shrinkage;
 
   // Update BoostIn influence matrix
-  (*boostInMatrix_LCA)[train_index][test_index] += dL_dy_hat * eta * dTheta_dWi;
+  (*boostInMatrix_LCA)[train_index][test_index] += lcaNodeWt * dL_dy_hat * eta * dTheta_dWi;
 }
 
 
