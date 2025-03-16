@@ -1,6 +1,5 @@
 import numpy as np
 import argparse
-import os
 
 def process_boostin_scores(input_csv, column_index, output_file):
     """
@@ -11,30 +10,23 @@ def process_boostin_scores(input_csv, column_index, output_file):
         column_index (int): Index of the column to rank the rows by.
         output_file (str): Path to the output file for ranked indices and scores.
     """
-    file_path = os.path.join("../influence_scores/", input_csv)
+    # Load CSV data and handle invalid/missing entries
+    data = np.genfromtxt(input_csv, delimiter=',', skip_header=0)
 
-    try:
-        # Load CSV data and handle invalid/missing entries
-        data = np.genfromtxt(file_path, delimiter=',', skip_header=0, dtype=float)
-    
-        # Print the filename and dimensions
-        print(f"Processing file: {file_path}")
-        print(f"Data dimensions: {data.shape}")
-    
-        # Print last column
-        print("Last column:")
-        print(data[:, -1])
+    # # Print the dimensions of the data
+    # print(f"Data dimensions: {data.shape}")
+    # print("Last column:")
+    # print(data[:, -1])
 
-    except ValueError as e:
-        print(f"\n❌ Error reading file: {file_path}")
-        print(f"⚠️ {str(e)}")
-        print("Possible causes: missing/extra columns, incorrect delimiter, or corrupted file.")
-        return  # Exit function to avoid further errors
-
-    # Check for invalid or missing data
+       # Check for invalid or missing data
     if np.isnan(data).any():
-        print(f"⚠️ Warning: Missing or invalid data found in {file_path}. Replacing NaNs with 0.")
+        print("Warning: Missing or invalid data found at the following locations (row, column):")
+        nan_locations = np.argwhere(np.isnan(data))
+        for loc in nan_locations:
+            print(f"Row: {loc[0]}, Column: {loc[1]}")
+        print("Replacing NaNs with 0.")
         data = np.nan_to_num(data, nan=0.0)
+
 
     # Ensure the column index is within range
     if column_index < 0 or column_index >= data.shape[1]:
@@ -47,14 +39,10 @@ def process_boostin_scores(input_csv, column_index, output_file):
     ranked_indices = np.argsort(-column_values)
 
     # Save the ranked indices and their scores to the output file
-    output_path = os.path.join("../influence_scores/", output_file)
-    with open(output_path, 'w') as f:
+    with open("../../influence_scores/" + output_file, 'w') as f:
         f.write("RowIndex,ColumnValue\n")
         for index in ranked_indices:
             f.write(f"{index},{column_values[index]:.6f}\n")
-
-    print(f"✅ Ranked rows by column {column_index} have been saved to {output_path}")
-
 
 def main():
     parser = argparse.ArgumentParser(description="Process BoostIn scores and rank rows by a specific column.")

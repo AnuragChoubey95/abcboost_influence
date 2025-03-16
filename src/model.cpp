@@ -80,7 +80,6 @@ GradientBoosting::~GradientBoosting() {
 }
 
 void GradientBoosting::print_test_message(int iter,double iter_time,int& low_err){
-  std::cout << " test msg GradBoost ";
   if(config->no_label)
     return;
   double loss = getLoss();
@@ -323,7 +322,6 @@ int GradientBoosting::getError() {
  * @return summed CE loss over training set.
  */
 double GradientBoosting::getLoss() {
-  std::cout << " get loss GradBoost ";
   double loss = 0.0;
   if(data->data_header.n_classes == 2){
     #pragma omp parallel for reduction(+ : loss)
@@ -336,6 +334,7 @@ double GradientBoosting::getLoss() {
       }
     }
   }else{
+    std::cout << " loss multiclass ";
     #pragma omp parallel for reduction(+ : loss)
     for (int i = 0; i < data->n_data; i++) {
       if (data->Y[i] >= 0) {
@@ -347,7 +346,9 @@ double GradientBoosting::getLoss() {
           denominator += exp(tmp);
         }
         // get loss for one example and add it to the total
-        loss += log(denominator);
+        double ith_loss = log(denominator);
+        test_sample_losses[i] = ith_loss;
+        loss += ith_loss;
       }
     }
   }
@@ -812,7 +813,7 @@ void Regression::test() {
     // Get the absolute path and append `loss_comp`
     std::string basePath(cwd);
     std::cout << basePath << std::endl;
-    std::string infScorePath = basePath + "/single_test_removal/influence_scores/";
+    std::string infScorePath = basePath + "/single_test_relabel/influence_scores/";
     // Write the BoostIn matrix to the CSV file
     std::string extension = inf == InfluenceType::BOOST_IN ? "BoostIn_Influence" : "LCA_Influence";
     std::string influence_file = infScorePath + config->formatted_output_name + extension + ".csv";
@@ -850,9 +851,9 @@ void Regression::test() {
   // Get the absolute path and append `loss_comp`
   std::string basePath(cwd);
   std::string lossCompPath = basePath + "/loss_comp/";
-  // Check if `lossCompPath` already contains `/single_test_removal/`
-  if (lossCompPath.find("/single_test_removal/") == std::string::npos) {
-      lossCompPath = basePath + "/single_test_removal/loss_comp/";
+  // Check if `lossCompPath` already contains `/single_test_relabel/`
+  if (lossCompPath.find("/single_test_relabel/") == std::string::npos) {
+      lossCompPath = basePath + "/single_test_relabel/loss_comp/";
   } 
   
   std::cout << "Writing losses to " << config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;
@@ -1202,7 +1203,7 @@ void BinaryMart::test() {
     // Get the absolute path and append `loss_comp`
     std::string basePath(cwd);
     std::cout << basePath << std::endl;
-    std::string infScorePath = basePath + "/single_test_removal/influence_scores/";
+    std::string infScorePath = basePath + "/single_test_relabel/influence_scores/";
     // Write the BoostIn matrix to the CSV file
     std::string extension = inf == InfluenceType::BOOST_IN ? "BoostIn_Influence" : "LCA_Influence";
     std::string influence_file = infScorePath + config->formatted_output_name + extension + ".csv";
@@ -1238,9 +1239,9 @@ void BinaryMart::test() {
   }
   std::string basePath(cwd);
   std::string lossCompPath = basePath + "/loss_comp/";
-  // Check if `lossCompPath` already contains `/single_test_removal/`
-  if (lossCompPath.find("/single_test_removal/") == std::string::npos) {
-      lossCompPath = basePath + "/single_test_removal/loss_comp/";
+  // Check if `lossCompPath` already contains `/single_test_relabel/`
+  if (lossCompPath.find("/single_test_relabel/") == std::string::npos) {
+      lossCompPath = basePath + "/single_test_relabel/loss_comp/";
   } 
   
   std::cout << "Writing losses to " << config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;
@@ -1469,28 +1470,208 @@ void Mart::test() {
   double best_accuracy = 0;
   int K = (data->data_header.n_classes == 2) ? 1 : data->data_header.n_classes;
   int low_err = std::numeric_limits<int>::max();
-  for (int m = 0; m < config->model_n_iterations; ++m) {
-    for (int k = 0; k < K; ++k) {
+
+  std::vector<int> predicted_classes(data->n_data, -1); // Store predicted classes //<<++ MY CHANGE
+
+  for (int m = 0; m < config->model_n_iterations; ++m) { //for each iteration
+    for (int k = 0; k < K; ++k) { // for each distinct output class
       if (additive_trees[m][k] != NULL) {
         additive_trees[m][k]->init(nullptr, &buffer[0], &buffer[1], nullptr,
                                    nullptr, nullptr,ids_tmp.data(),H_tmp.data(),R_tmp.data());
         std::vector<double> updates = additive_trees[m][k]->predictAll(data);
-        for (int i = 0; i < data->n_data; ++i) {
-          F[k][i] += config->model_shrinkage * updates[i];
+        for (int i = 0; i < data->n_data; ++i) { // for each test sample
+          F[k][i] += config->model_shrinkage * updates[i]; // output predicted value
         }
       }
     }
 
     if (data->data_header.n_classes == 2) {
-#pragma omp parallel for
+      #pragma omp parallel for
       for (int i = 0; i < data->n_data; ++i) F[1][i] = -F[0][i];
     }
 
+    // Find the class with the highest score for each test sample //<<++ MY CHANGE
+    #pragma omp parallel for
+    for (int i = 0; i < data->n_data; ++i) {
+      int best_class = 0;
+      double max_score = F[0][i];
+      for (int k = 1; k < K; ++k) { // Check for the max logit score
+        if (F[k][i] > max_score) {
+          max_score = F[k][i];
+          best_class = k;
+        }
+      }
+      predicted_classes[i] = best_class; // Update predicted class
+    }
+
     if ((m + 1) % config->model_eval_every == 0){
-      print_test_message(m + 1,t1.get_time_restart(),low_err);
+      print_test_message(m + 1, t1.get_time_restart(), low_err);
     }
   }
+
+  bool getInfluence = false; // Flag: Compute Influence?
+
+  if (getInfluence) {
+    int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
+    int n_testing = data->n_data; // Number of test samples
+
+    std::cout << "Number of Test Samples: " << n_testing << std::endl;
+    std::cout << "Number of Train Samples: " << n_training << std::endl;
+
+    InfluenceType inf = InfluenceType::BOOST_IN; // What method of influence?
+
+    std::vector<std::vector<double>> influenceMatrix(
+        n_training,
+        std::vector<double>(n_testing, 0.0));
+
+    std::vector<std::vector<double>> lca_predictions(
+        n_training, 
+        std::vector<double>(n_testing, 0));
+
+    Utils::Timer loop_timer, io_timer; // Timer for measuring each outer loop
+    for (int m = 0; m < config->model_n_iterations; ++m) {
+        loop_timer.restart(); // Start timing
+
+        for (int i = 0; i < n_testing; ++i) {
+          for (int j = 0; j < n_training; j++) { // Iterate over training samples
+            if (inf == InfluenceType::BOOST_IN) {
+                this->calculateBoostInInfluence(j, i, m, predicted_classes[i], &influenceMatrix);
+            }
+            if (inf == InfluenceType::BOOST_IN_LCA) {
+                this->calculateBoostInInfluence_LCA(j, i, m, predicted_classes[i], &lca_predictions[j][i], &influenceMatrix);
+            }
+          }
+        }
+        double elapsed_time = loop_timer.get_time_restart(); // Get elapsed time
+        std::cout << "[Iteration " << m + 1 << "] Influence computation took: " 
+                  << std::fixed << std::setprecision(5) << elapsed_time << " seconds.\n";
+    }
+    // Time the I/O operation
+    io_timer.restart();
+    // Open a CSV file for writing test sample losses
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) == NULL) {
+        perror("getcwd() error");
+        return;
+    }
+
+    // Get the absolute path and append `loss_comp`
+    std::string basePath(cwd);
+    std::cout << basePath << std::endl;
+    std::string infScorePath = basePath + "/single_test_relabel/influence_scores/";
+    // Write the BoostIn matrix to the CSV file
+    std::string extension = inf == InfluenceType::BOOST_IN ? "BoostIn_Influence" : "LCA_Influence";
+    std::string influence_file = infScorePath + config->formatted_output_name + extension + ".csv";
+
+    FILE *csv_file = fopen(influence_file.c_str(), "w");
+    if (csv_file == NULL) {
+      perror("Error opening influence file");
+      return;
+    }
+
+    // Write BoostIn influence scores
+    for (int j = 0; j < n_training; j++) {
+      for (int i = 0; i < data->n_data; i++) {
+        if (i == data->n_data - 1) {
+          fprintf(csv_file, "%.6f", influenceMatrix[j][i]);
+        } else {
+          fprintf(csv_file, "%.6f,", influenceMatrix[j][i]);
+        }
+      }
+      fprintf(csv_file, "\n"); 
+    }
+
+    fclose(csv_file);
+    double io_time = io_timer.get_time(); 
+    printf("I/O operation time: %.5f seconds\n", io_time);
+  }
+  // Open a CSV file for writing test sample losses
+  char cwd[PATH_MAX];
+  if (getcwd(cwd, sizeof(cwd)) == NULL) {
+      perror("getcwd() error");
+      return;
+  }
+  std::string basePath(cwd);
+  std::string lossCompPath = basePath + "/loss_comp/";
+  // Check if `lossCompPath` already contains `/single_test_relabel/`
+  if (lossCompPath.find("/single_test_relabel/") == std::string::npos) {
+      lossCompPath = basePath + "/single_test_relabel/loss_comp/";
+  } 
+  
+  std::cout << "Writing losses to " << config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;
+  std::string losses_file = lossCompPath + config->model_pretrained_path + "_test_sample_losses.csv";
+  FILE *losses_csv = fopen(losses_file.c_str(), "w");
+  if (losses_csv == NULL) {
+      std::cout << lossCompPath << std::endl;
+      perror("Error opening losses file");
+      return;
+  }
+
+  // Write losses for each test sample
+  for (int i = 0; i < test_sample_losses.size(); i++) {
+      fprintf(losses_csv, "%d,%.6f\n", i, test_sample_losses[i]);
+  }
+  // Close the file
+  fclose(losses_csv);
 }
+
+void Mart::calculateBoostInInfluence(
+  int train_index,
+  int test_index,
+  int t, 
+  int predicted_class,
+  std::vector<std::vector<double>>* influenceMatrix
+) {
+  int train_leaf_index = additive_trees[t][predicted_class]->train_leaf_indices[train_index];
+  int test_leaf_index = additive_trees[t][predicted_class]->test_leaf_indices[test_index];
+
+  // Check if training and test samples are in the same leaf
+  if (train_leaf_index != test_leaf_index) {
+    return;
+  }
+
+  double prediction_test = F[predicted_class][test_index]; //intermediate prediction
+  double residual_test = prediction_test - data->Y[test_index];
+  double dL_dy_hat = 2.0 * residual_test;
+  double dTheta_dWi = additive_trees[t][0]->computeThetaDerivative(train_index, test_index);
+  double eta = config->model_shrinkage;
+
+  // Update BoostIn influence matrix
+  (*influenceMatrix)[train_index][test_index] += dL_dy_hat * eta * dTheta_dWi;
+}
+
+void Mart::calculateBoostInInfluence_LCA(
+  int train_index,
+  int test_index,
+  int t, 
+  int predicted_class,
+  double* lca_prediction_t_j_i,
+  std::vector<std::vector<double>>* boostInMatrix_LCA
+) {
+  int train_leaf_index = additive_trees[t][predicted_class]->train_leaf_indices[train_index];
+  int test_leaf_index = additive_trees[t][predicted_class]->test_leaf_indices[test_index];
+
+  int lcaNodeIdx = additive_trees[t][predicted_class]->findLCA(train_leaf_index, test_leaf_index);
+  double lcaNodeWt = additive_trees[t][predicted_class]->calculateDepthWeight(lcaNodeIdx);
+  assert(lcaNodeIdx != -1 && "LCA computation failed: LCA index is -1");
+
+  double lcaPredict_v = additive_trees[t][predicted_class]->nodes[lcaNodeIdx].predict_v;
+  *lca_prediction_t_j_i += config->model_shrinkage * lcaPredict_v;
+
+  double prediction_test = *lca_prediction_t_j_i; // Intermediate prediction
+  double residual_test = prediction_test - data->Y[test_index];
+  double dL_dy_hat = 2.0 * residual_test;
+  double dTheta_dWi = additive_trees[t][0]->computeThetaDerivative_LCA(train_index, lcaNodeIdx);
+  double eta = config->model_shrinkage;
+
+  // Update BoostIn influence matrix
+  (*boostInMatrix_LCA)[train_index][test_index] += lcaNodeWt * dL_dy_hat * eta * dTheta_dWi;
+
+  // Ensure that the updated value is not null
+  assert((*boostInMatrix_LCA)[train_index][test_index] != 0 && "BoostIn influence matrix entry is null after update");
+}
+
+
 
 std::vector<std::vector<std::vector<unsigned int>>>
 GradientBoosting::initBuffer() {
@@ -1528,7 +1709,7 @@ void Mart::train() {
   t2.restart();
   t3.restart();
 
-  for (int m = start_epoch; m < config->model_n_iterations; m++) {
+  for (int m = start_epoch; m < config->model_n_iterations; m++) { //for each epoch
     if (config->model_data_sample_rate < 1)
       ids = sample(data->n_data, config->model_data_sample_rate);
     if (config->model_feature_sample_rate < 1)
@@ -1537,7 +1718,7 @@ void Mart::train() {
     
     computeHessianResidual();
 
-    for (int k = 0; k < K; ++k) {
+    for (int k = 0; k < K; ++k) { //for each tree
       
       zeroBins();
       Tree *tree;

@@ -10,7 +10,7 @@ fi
 substring="$1"
 
 # Determine the number of columns in the influence files
-num_columns=$(head -n 1 ../influence_scores/${substring}.test.csv_robustlogit_J20_v0.1BoostIn_Influence.csv | awk -F',' '{print NF}')
+num_columns=$(head -n 1 ../../influence_scores/${substring}.test.csv_mart_J20_v0.1BoostIn_Influence.csv | awk -F',' '{print NF}')
 
 if [ -z "$num_columns" ] || [ "$num_columns" -eq 0 ]; then
     echo "Error: Unable to determine the number of columns in the influence file."
@@ -30,10 +30,10 @@ for index in "${indices[@]}"; do
     echo "Processing index: $index"
 
     # Rank train samples using BoostIn influence file
-    python3 rank_train_samples.py ../influence_scores/${substring}.test.csv_robustlogit_J20_v0.1BoostIn_Influence.csv ${substring}_ranked $index
+    python3 rank_train_samples.py ../../influence_scores/${substring}.test.csv_mart_J20_v0.1BoostIn_Influence.csv ${substring}_ranked $index
 
     # Rank train samples using LCA influence file
-    python3 rank_train_samples.py ../influence_scores/${substring}.test.csv_robustlogit_J20_v0.1LCA_Influence.csv ${substring}_ranked $index
+    python3 rank_train_samples.py ../../influence_scores/${substring}.test.csv_mart_J20_v0.1LCA_Influence.csv ${substring}_ranked $index
 
     # Iterate over each percentage
     for percentage in "${percentages[@]}"; do

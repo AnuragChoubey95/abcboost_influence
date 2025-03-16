@@ -202,6 +202,21 @@ class Mart : public GradientBoosting {
 
  private:
   void computeHessianResidual();
+  void calculateBoostInInfluence(
+    int train_index,
+    int test_index,
+    int t, 
+    int predicted_class,
+    std::vector<std::vector<double>>* influenceMatrix
+  );
+  void calculateBoostInInfluence_LCA(
+    int train_index,
+    int test_index,
+    int t, 
+    int predicted_class,
+    double* lca_prediction_t_j_i,
+    std::vector<std::vector<double>>* boostInMatrix_LCA
+  );
 };
 
 class ABCMart : public GradientBoosting {

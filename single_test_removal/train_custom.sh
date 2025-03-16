@@ -38,14 +38,14 @@ for dataset in ${custom_data_dir}*.csv; do
     if [[ $(basename "$dataset") == *"$substring"* ]]; then
         echo "Processing dataset: $dataset"
 
-        # Extract dataset name without path and extension
+        # Extract dataset name without path and extension   
         dataset_name=$(basename "$dataset" .csv)
 
         # Train the model on the custom dataset
-        $train_script -method robustlogit -lp 2 -data "$dataset" -J 20 -v 0.1 -iter 1000
+        $train_script -method mart -lp 2 -data "$dataset" -J 20 -v 0.1 -iter 1000
 
         # # Derive the model name from the dataset name
-        model_file="${dataset_name}.csv_robustlogit_J20_v0.1.model"
+        model_file="${dataset_name}.csv_mart_J20_v0.1.model"
 
         # # Predict using the trained model
         $predict_script -data "$test_data" -model "$model_file"

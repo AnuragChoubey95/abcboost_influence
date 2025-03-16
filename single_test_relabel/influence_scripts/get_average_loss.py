@@ -1,71 +1,91 @@
 import os
-import numpy as np
 import re
-from collections import defaultdict
-import time
 import argparse
+import numpy as np
+import time
+from collections import defaultdict
 
-def preprocess_loss_directory(loss_dir, substring):
+def preprocess_loss_directory(loss_dir, substring, task_type):
     """
-    Preprocess the directory to extract unique columns and percentages.
-
-    Args:
-        loss_dir (str): Path to the directory containing loss files.
-
+    Scans all CSV files in 'loss_dir' that match 'substring', detecting:
+      - unique columns (by regex `_column(\d+)`)
+      - unique percentages (by regex `filtered_(\d+(\.\d+)?)%`)
+      - method categorization (BoostIn/LCA)
+      - which file is the 'original' file, based on task_type.
+    
     Returns:
-        tuple: A tuple containing:
-            - unique_columns (set): Unique test sample indices (columns) in filenames.
-            - unique_percentages (set): Unique percentages in filenames.
-            - loss_files (dict): Dictionary categorizing files by method (BoostIn or LCA).
+      unique_columns (set of int)
+      unique_percentages (set of float)
+      loss_files (dict of lists):
+         {
+           "original": [...],
+           "BoostIn": [...],
+           "LCA": [...]
+         }
     """
     unique_columns = set()
-    unique_percentages = set()
+    unique_percentages = set()  # <--- now starting as empty, discovered from filenames
     loss_files = defaultdict(list)
 
-    # Extract columns, percentages, and categorize files
     for file in os.listdir(loss_dir):
+        # We only consider CSV files containing the user-specified 'substring'
         if file.endswith(".csv") and substring in file:
-            # Extract column and percentage from filename
-            column_match = re.search(r"column(\d+)", file)
-            percentage_match = re.search(r"filtered_(\d+(\.\d+)?)%", file)
+            # 1) Identify the original file (task_type-based)
+            if task_type == "regression":
+                if file == f"{substring}.train.csv_regression_J20_v0.1_p2.model_test_sample_losses.csv":
+                    loss_files["original"].append(file)
+            elif task_type == "multiclass":
+                if file == f"{substring}.train.csv_mart_J20_v0.1.model_test_sample_losses.csv":
+                    loss_files["original"].append(file)
+            else:  # default 'binary'
+                if file == f"{substring}.train.csv_robustlogit_J20_v0.1.model_test_sample_losses.csv":
+                    loss_files["original"].append(file)
 
+            # 2) Attempt to detect "columnXYZ" in the filename
+            column_match = re.search(r"_column(\d+)", file)
             if column_match:
-                unique_columns.add(int(column_match.group(1)))
-            if percentage_match:
-                unique_percentages.add(float(percentage_match.group(1)))
+                col_idx = int(column_match.group(1))
+                unique_columns.add(col_idx)
 
-            # Categorize files by method
+            # 3) Attempt to detect "filtered_XX%" in the filename
+            percentage_match = re.search(r"relabelled_(\d+(?:\.\d+)?)%", file)
+            if percentage_match:
+                val = float(percentage_match.group(1))
+                unique_percentages.add(val)
+
+            # 4) Classify method
             if "BoostIn" in file:
                 loss_files["BoostIn"].append(file)
             elif "LCA" in file:
                 loss_files["LCA"].append(file)
-            elif file == f"{substring}.train.csv_mart_J20_v0.1.model_test_sample_losses.csv":
-                loss_files["original"].append(file)
-
+    
     return unique_columns, unique_percentages, loss_files
 
 
-def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_files, substring):
+def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages,
+                            loss_files, substring, task_type):
     """
-    Compare losses for BoostIn and LCA methods with the original loss file and rank them.
-
-    Args:
-        loss_dir (str): Path to the directory containing loss files.
-        unique_columns (set): Unique test sample indices to consider.
-        unique_percentages (set): Unique percentages in filenames.
-        loss_files (dict): Dictionary categorizing files by method (BoostIn, LCA, original).
-
-    Returns:
-        dict: Average rank and average delta loss for BoostIn and LCA methods.
+    Loads the 'original' loss file (task_type determines naming),
+    and then compares each (column, percentage) variant of BoostIn/LCA
+    to compute average deltas, etc.
     """
+
     comparison_results = {
         "BoostIn": defaultdict(list),
         "LCA": defaultdict(list)
     }
 
-    # Load the original loss file
-    original_loss_file = f"{substring}.train.csv_mart_J20_v0.1.model_test_sample_losses.csv"
+    # Figure out the original file name from task_type
+    if task_type == "regression":
+        original_loss_file = f"{substring}.train.csv_regression_J20_v0.1_p2.model_test_sample_losses.csv"
+    elif task_type == "multiclass":
+        original_loss_file = f"{substring}.train.csv_mart_J20_v0.1.model_test_sample_losses.csv"
+    else:
+        original_loss_file = f"{substring}.train.csv_robustlogit_J20_v0.1.model_test_sample_losses.csv"
+
+    original_path = os.path.join(loss_dir, original_loss_file)
     print(f"Loading original loss file: {original_loss_file}")
+    
     time.sleep(0.5)
     original_data = np.loadtxt(os.path.join(loss_dir, original_loss_file), delimiter=',')
     original_indices = original_data[:, 0]
@@ -86,7 +106,7 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_f
             # time.sleep(0.5)
             for file in loss_files[method]:
                 # Ensure the file corresponds to the percentage
-                percentage_str = f"filtered_{percentage:.1f}%".rstrip(".0%")
+                percentage_str = f"relabelled_{percentage:.1f}%".rstrip(".0%")
                 if percentage_str not in file:
                     continue
 
@@ -161,25 +181,32 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_f
         f.write("\n--------------------------------------------------------------------------------------------")
 
 
+
 def main():
     parser = argparse.ArgumentParser(description="Process loss files based on a substring.")
     parser.add_argument("substring", type=str, help="Substring to filter filenames.")
+    parser.add_argument("task_type", type=str, help="Task type (binary, multiclass, or regression).")
     args = parser.parse_args()
-    substring = args.substring
 
-    # Directory containing loss files
+    substring = args.substring
+    task_type = args.task_type
+    print(task_type)
+    # Directory containing your CSV loss files
     loss_dir = os.path.join(os.path.dirname(__file__), "../loss_comp/")
 
-    # Preprocess the directory
-    unique_columns, unique_percentages, loss_files = preprocess_loss_directory(loss_dir, substring)
+    # 1) Collect the columns, percentages, etc.
+    unique_columns, unique_percentages, loss_files = preprocess_loss_directory(
+        loss_dir, substring, task_type
+    )
 
-    # Print unique columns and percentages
+    # 2) Print them out to verify
     print(f"Unique Columns: {sorted(unique_columns)}")
     print(f"Unique Percentages: {sorted(unique_percentages)}")
     time.sleep(0.5)
 
-    # Compare losses and rank methods
-    compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_files, substring)
+    # 3) Perform the actual comparisons
+    compare_losses_and_rank(loss_dir, unique_columns, unique_percentages,
+                            loss_files, substring, task_type)
 
 
 if __name__ == "__main__":
