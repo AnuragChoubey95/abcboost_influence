@@ -1,0 +1,901 @@
+============================================================
+Dataset: compas
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -76.745174
+  LCA: -76.756008
+  Greater Delta: BoostIn
+
+--- 10% Relabel ---
+  BoostIn: -76.498808
+  LCA: -76.387041
+  Greater Delta: LCA
+
+--- 15% Relabel ---
+  BoostIn: -76.220833
+  LCA: -76.014497
+  Greater Delta: LCA
+
+--- 20% Relabel ---
+  BoostIn: -75.862355
+  LCA: -75.442164
+  Greater Delta: LCA
+
+--- 25% Relabel ---
+  BoostIn: -75.649866
+  LCA: -74.551253
+  Greater Delta: LCA
+
+--- 30% Relabel ---
+  BoostIn: -75.431361
+  LCA: -73.908696
+  Greater Delta: LCA
+
+--- 35% Relabel ---
+  BoostIn: -74.690868
+  LCA: -72.928870
+  Greater Delta: LCA
+
+--- 40% Relabel ---
+  BoostIn: -72.916879
+  LCA: -72.149946
+  Greater Delta: LCA
+
+--- 45% Relabel ---
+  BoostIn: -66.957443
+  LCA: -70.523752
+  Greater Delta: BoostIn
+
+--- 50% Relabel ---
+  BoostIn: -62.103064
+  LCA: -67.072660
+  Greater Delta: BoostIn
+============================================================
+Dataset: htru2
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -223.503916
+  LCA: -223.494000
+  Greater Delta: LCA
+
+--- 10% Relabel ---
+  BoostIn: -223.446287
+  LCA: -223.425671
+  Greater Delta: LCA
+
+--- 15% Relabel ---
+  BoostIn: -223.363662
+  LCA: -223.341907
+  Greater Delta: LCA
+
+--- 20% Relabel ---
+  BoostIn: -223.254366
+  LCA: -223.217677
+  Greater Delta: LCA
+
+--- 25% Relabel ---
+  BoostIn: -223.146303
+  LCA: -223.082162
+  Greater Delta: LCA
+
+--- 30% Relabel ---
+  BoostIn: -223.013074
+  LCA: -222.920164
+  Greater Delta: LCA
+
+--- 35% Relabel ---
+  BoostIn: -222.880162
+  LCA: -222.743325
+  Greater Delta: LCA
+
+--- 40% Relabel ---
+  BoostIn: -222.744995
+  LCA: -222.514423
+  Greater Delta: LCA
+
+--- 45% Relabel ---
+  BoostIn: -222.555054
+  LCA: -222.299173
+  Greater Delta: LCA
+
+--- 50% Relabel ---
+  BoostIn: -222.345999
+  LCA: -222.021647
+  Greater Delta: LCA
+============================================================
+Dataset: credit_card
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -174.688093
+  LCA: -174.708813
+  Greater Delta: BoostIn
+
+--- 10% Relabel ---
+  BoostIn: -174.640853
+  LCA: -174.667486
+  Greater Delta: BoostIn
+
+--- 15% Relabel ---
+  BoostIn: -174.571243
+  LCA: -174.621767
+  Greater Delta: BoostIn
+
+--- 20% Relabel ---
+  BoostIn: -174.499306
+  LCA: -174.560745
+  Greater Delta: BoostIn
+
+--- 25% Relabel ---
+  BoostIn: -174.400042
+  LCA: -174.485854
+  Greater Delta: BoostIn
+
+--- 30% Relabel ---
+  BoostIn: -174.290339
+  LCA: -174.388814
+  Greater Delta: BoostIn
+
+--- 35% Relabel ---
+  BoostIn: -174.157545
+  LCA: -174.287546
+  Greater Delta: BoostIn
+
+--- 40% Relabel ---
+  BoostIn: -173.982480
+  LCA: -174.139916
+  Greater Delta: BoostIn
+
+--- 45% Relabel ---
+  BoostIn: -173.771141
+  LCA: -173.946592
+  Greater Delta: BoostIn
+
+--- 50% Relabel ---
+  BoostIn: -173.466660
+  LCA: -173.718716
+  Greater Delta: BoostIn
+============================================================
+Dataset: flight_delays
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -174.728135
+  LCA: -174.741972
+  Greater Delta: BoostIn
+
+--- 10% Relabel ---
+  BoostIn: -174.688215
+  LCA: -174.713053
+  Greater Delta: BoostIn
+
+--- 15% Relabel ---
+  BoostIn: -174.644790
+  LCA: -174.694230
+  Greater Delta: BoostIn
+
+--- 20% Relabel ---
+  BoostIn: -174.587262
+  LCA: -174.647575
+  Greater Delta: BoostIn
+
+--- 25% Relabel ---
+  BoostIn: -174.513111
+  LCA: -174.589107
+  Greater Delta: BoostIn
+
+--- 30% Relabel ---
+  BoostIn: -174.431489
+  LCA: -174.527179
+  Greater Delta: BoostIn
+
+--- 35% Relabel ---
+  BoostIn: -174.322043
+  LCA: -174.455175
+  Greater Delta: BoostIn
+
+--- 40% Relabel ---
+  BoostIn: -174.167123
+  LCA: -174.358873
+  Greater Delta: BoostIn
+
+--- 45% Relabel ---
+  BoostIn: -173.963668
+  LCA: -174.248063
+  Greater Delta: BoostIn
+
+--- 50% Relabel ---
+  BoostIn: -173.676970
+  LCA: -174.093035
+  Greater Delta: BoostIn
+============================================================
+Dataset: diabetes
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -174.722974
+  LCA: -174.739235
+  Greater Delta: BoostIn
+
+--- 10% Relabel ---
+  BoostIn: -174.691301
+  LCA: -174.717227
+  Greater Delta: BoostIn
+
+--- 15% Relabel ---
+  BoostIn: -174.650699
+  LCA: -174.687125
+  Greater Delta: BoostIn
+
+--- 20% Relabel ---
+  BoostIn: -174.601285
+  LCA: -174.644136
+  Greater Delta: BoostIn
+
+--- 25% Relabel ---
+  BoostIn: -174.541245
+  LCA: -174.588655
+  Greater Delta: BoostIn
+
+--- 30% Relabel ---
+  BoostIn: -174.461225
+  LCA: -174.533080
+  Greater Delta: BoostIn
+
+--- 35% Relabel ---
+  BoostIn: -174.365675
+  LCA: -174.432793
+  Greater Delta: BoostIn
+
+--- 40% Relabel ---
+  BoostIn: -174.236619
+  LCA: -174.353091
+  Greater Delta: BoostIn
+
+--- 45% Relabel ---
+  BoostIn: -174.082983
+  LCA: -174.213657
+  Greater Delta: BoostIn
+
+--- 50% Relabel ---
+  BoostIn: -173.888242
+  LCA: -174.050878
+  Greater Delta: BoostIn
+============================================================
+Dataset: no_show
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -174.720976
+  LCA: -174.736951
+  Greater Delta: BoostIn
+
+--- 10% Relabel ---
+  BoostIn: -174.681173
+  LCA: -174.708642
+  Greater Delta: BoostIn
+
+--- 15% Relabel ---
+  BoostIn: -174.616894
+  LCA: -174.662438
+  Greater Delta: BoostIn
+
+--- 20% Relabel ---
+  BoostIn: -174.548991
+  LCA: -174.607748
+  Greater Delta: BoostIn
+
+--- 25% Relabel ---
+  BoostIn: -174.448687
+  LCA: -174.540692
+  Greater Delta: BoostIn
+
+--- 30% Relabel ---
+  BoostIn: -174.346529
+  LCA: -174.452809
+  Greater Delta: BoostIn
+
+--- 35% Relabel ---
+  BoostIn: -174.221675
+  LCA: -174.369550
+  Greater Delta: BoostIn
+
+--- 40% Relabel ---
+  BoostIn: -174.080091
+  LCA: -174.273033
+  Greater Delta: BoostIn
+
+--- 45% Relabel ---
+  BoostIn: -173.927362
+  LCA: -174.070779
+  Greater Delta: BoostIn
+
+--- 50% Relabel ---
+  BoostIn: -173.717035
+  LCA: -173.912664
+  Greater Delta: BoostIn
+============================================================
+Dataset: german_credit
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -12.188076
+  LCA: -12.158715
+  Greater Delta: LCA
+
+--- 10% Relabel ---
+  BoostIn: -11.876458
+  LCA: -11.879509
+  Greater Delta: BoostIn
+
+--- 15% Relabel ---
+  BoostIn: -11.751016
+  LCA: -11.619779
+  Greater Delta: LCA
+
+--- 20% Relabel ---
+  BoostIn: -11.506403
+  LCA: -11.236895
+  Greater Delta: LCA
+
+--- 25% Relabel ---
+  BoostIn: -10.705406
+  LCA: -10.780440
+  Greater Delta: BoostIn
+
+--- 30% Relabel ---
+  BoostIn: -10.160694
+  LCA: -9.936215
+  Greater Delta: LCA
+
+--- 35% Relabel ---
+  BoostIn: -9.642304
+  LCA: -9.600566
+  Greater Delta: LCA
+
+--- 40% Relabel ---
+  BoostIn: -8.579667
+  LCA: -8.760737
+  Greater Delta: BoostIn
+
+--- 45% Relabel ---
+  BoostIn: -6.903632
+  LCA: -7.010695
+  Greater Delta: BoostIn
+
+--- 50% Relabel ---
+  BoostIn: -4.629762
+  LCA: -4.531490
+  Greater Delta: LCA
+============================================================
+Dataset: spambase
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -57.240069
+  LCA: -57.214677
+  Greater Delta: LCA
+
+--- 10% Relabel ---
+  BoostIn: -57.269183
+  LCA: -57.225905
+  Greater Delta: LCA
+
+--- 15% Relabel ---
+  BoostIn: -57.225460
+  LCA: -57.140691
+  Greater Delta: LCA
+
+--- 20% Relabel ---
+  BoostIn: -57.199024
+  LCA: -57.155683
+  Greater Delta: LCA
+
+--- 25% Relabel ---
+  BoostIn: -57.190091
+  LCA: -57.090137
+  Greater Delta: LCA
+
+--- 30% Relabel ---
+  BoostIn: -57.061934
+  LCA: -57.038013
+  Greater Delta: LCA
+
+--- 35% Relabel ---
+  BoostIn: -56.988954
+  LCA: -56.926426
+  Greater Delta: LCA
+
+--- 40% Relabel ---
+  BoostIn: -56.889277
+  LCA: -56.752287
+  Greater Delta: LCA
+
+--- 45% Relabel ---
+  BoostIn: -56.721344
+  LCA: -56.576656
+  Greater Delta: LCA
+
+--- 50% Relabel ---
+  BoostIn: -56.560963
+  LCA: -56.322829
+  Greater Delta: LCA
+============================================================
+Dataset: surgical
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -174.712813
+  LCA: -174.725200
+  Greater Delta: BoostIn
+
+--- 10% Relabel ---
+  BoostIn: -174.658856
+  LCA: -174.682920
+  Greater Delta: BoostIn
+
+--- 15% Relabel ---
+  BoostIn: -174.557157
+  LCA: -174.631622
+  Greater Delta: BoostIn
+
+--- 20% Relabel ---
+  BoostIn: -174.452262
+  LCA: -174.552809
+  Greater Delta: BoostIn
+
+--- 25% Relabel ---
+  BoostIn: -174.279956
+  LCA: -174.455540
+  Greater Delta: BoostIn
+
+--- 30% Relabel ---
+  BoostIn: -174.028688
+  LCA: -174.334483
+  Greater Delta: BoostIn
+
+--- 35% Relabel ---
+  BoostIn: -173.669434
+  LCA: -174.229049
+  Greater Delta: BoostIn
+
+--- 40% Relabel ---
+  BoostIn: -173.236180
+  LCA: -174.014983
+  Greater Delta: BoostIn
+
+--- 45% Relabel ---
+  BoostIn: -173.199335
+  LCA: -173.794255
+  Greater Delta: BoostIn
+
+--- 50% Relabel ---
+  BoostIn: -173.141205
+  LCA: -173.739297
+  Greater Delta: BoostIn
+============================================================
+Dataset: vaccine
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -174.724658
+  LCA: -174.723974
+  Greater Delta: LCA
+
+--- 10% Relabel ---
+  BoostIn: -174.669917
+  LCA: -174.674944
+  Greater Delta: BoostIn
+
+--- 15% Relabel ---
+  BoostIn: -174.604564
+  LCA: -174.598446
+  Greater Delta: LCA
+
+--- 20% Relabel ---
+  BoostIn: -174.508436
+  LCA: -174.485131
+  Greater Delta: LCA
+
+--- 25% Relabel ---
+  BoostIn: -174.357663
+  LCA: -174.374209
+  Greater Delta: BoostIn
+
+--- 30% Relabel ---
+  BoostIn: -174.121742
+  LCA: -174.159414
+  Greater Delta: BoostIn
+
+--- 35% Relabel ---
+  BoostIn: -173.689055
+  LCA: -173.866821
+  Greater Delta: BoostIn
+
+--- 40% Relabel ---
+  BoostIn: -172.857172
+  LCA: -173.487963
+  Greater Delta: BoostIn
+
+--- 45% Relabel ---
+  BoostIn: -168.512569
+  LCA: -172.875769
+  Greater Delta: BoostIn
+
+--- 50% Relabel ---
+  BoostIn: -168.632659
+  LCA: -172.260163
+  Greater Delta: BoostIn
+============================================================
+Dataset: dry_bean
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -169.992752
+  LCA: -170.059061
+  Greater Delta: BoostIn
+
+--- 10% Relabel ---
+  BoostIn: -169.817917
+  LCA: -170.030868
+  Greater Delta: BoostIn
+
+--- 15% Relabel ---
+  BoostIn: -169.677502
+  LCA: -169.972409
+  Greater Delta: BoostIn
+
+--- 20% Relabel ---
+  BoostIn: -169.715699
+  LCA: -169.905841
+  Greater Delta: BoostIn
+
+--- 25% Relabel ---
+  BoostIn: -169.674096
+  LCA: -169.855317
+  Greater Delta: BoostIn
+
+--- 30% Relabel ---
+  BoostIn: -169.683175
+  LCA: -169.852298
+  Greater Delta: BoostIn
+
+--- 35% Relabel ---
+  BoostIn: -169.660839
+  LCA: -169.831972
+  Greater Delta: BoostIn
+
+--- 40% Relabel ---
+  BoostIn: -169.640556
+  LCA: -169.815165
+  Greater Delta: BoostIn
+
+--- 45% Relabel ---
+  BoostIn: -169.602302
+  LCA: -169.773215
+  Greater Delta: BoostIn
+
+--- 50% Relabel ---
+  BoostIn: -169.533197
+  LCA: -169.697783
+  Greater Delta: BoostIn
+============================================================
+Dataset: concrete
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -12.713068
+  LCA: -12.708403
+  Greater Delta: LCA
+
+--- 10% Relabel ---
+  BoostIn: -12.652132
+  LCA: -12.644520
+  Greater Delta: LCA
+
+--- 15% Relabel ---
+  BoostIn: -12.593611
+  LCA: -12.620505
+  Greater Delta: BoostIn
+
+--- 20% Relabel ---
+  BoostIn: -12.570008
+  LCA: -12.581657
+  Greater Delta: BoostIn
+
+--- 25% Relabel ---
+  BoostIn: -12.512962
+  LCA: -12.526546
+  Greater Delta: BoostIn
+
+--- 30% Relabel ---
+  BoostIn: -12.482919
+  LCA: -12.493689
+  Greater Delta: BoostIn
+
+--- 35% Relabel ---
+  BoostIn: -12.447828
+  LCA: -12.476567
+  Greater Delta: BoostIn
+
+--- 40% Relabel ---
+  BoostIn: -12.402841
+  LCA: -12.420129
+  Greater Delta: BoostIn
+
+--- 45% Relabel ---
+  BoostIn: -12.378457
+  LCA: -12.424966
+  Greater Delta: BoostIn
+
+--- 50% Relabel ---
+  BoostIn: -12.321151
+  LCA: -12.395578
+  Greater Delta: BoostIn
+============================================================
+Dataset: energy_efficiency
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -9.488044
+  LCA: -9.482934
+  Greater Delta: LCA
+
+--- 10% Relabel ---
+  BoostIn: -9.478418
+  LCA: -9.467723
+  Greater Delta: LCA
+
+--- 15% Relabel ---
+  BoostIn: -9.460809
+  LCA: -9.458587
+  Greater Delta: LCA
+
+--- 20% Relabel ---
+  BoostIn: -9.446431
+  LCA: -9.439574
+  Greater Delta: LCA
+
+--- 25% Relabel ---
+  BoostIn: -9.433531
+  LCA: -9.424309
+  Greater Delta: LCA
+
+--- 30% Relabel ---
+  BoostIn: -9.420568
+  LCA: -9.392056
+  Greater Delta: LCA
+
+--- 35% Relabel ---
+  BoostIn: -9.413106
+  LCA: -9.385817
+  Greater Delta: LCA
+
+--- 40% Relabel ---
+  BoostIn: -9.406898
+  LCA: -9.365912
+  Greater Delta: LCA
+
+--- 45% Relabel ---
+  BoostIn: -9.378920
+  LCA: -9.345868
+  Greater Delta: LCA
+
+--- 50% Relabel ---
+  BoostIn: -9.359374
+  LCA: -9.339845
+  Greater Delta: LCA
+============================================================
+Dataset: life_expectancy
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -36.497926
+  LCA: -36.497947
+  Greater Delta: BoostIn
+
+--- 10% Relabel ---
+  BoostIn: -36.495417
+  LCA: -36.495121
+  Greater Delta: LCA
+
+--- 15% Relabel ---
+  BoostIn: -36.492306
+  LCA: -36.491925
+  Greater Delta: LCA
+
+--- 20% Relabel ---
+  BoostIn: -36.489328
+  LCA: -36.490200
+  Greater Delta: BoostIn
+
+--- 25% Relabel ---
+  BoostIn: -36.486944
+  LCA: -36.487553
+  Greater Delta: BoostIn
+
+--- 30% Relabel ---
+  BoostIn: -36.485786
+  LCA: -36.484515
+  Greater Delta: LCA
+
+--- 35% Relabel ---
+  BoostIn: -36.483582
+  LCA: -36.482792
+  Greater Delta: LCA
+
+--- 40% Relabel ---
+  BoostIn: -36.481089
+  LCA: -36.480176
+  Greater Delta: LCA
+
+--- 45% Relabel ---
+  BoostIn: -36.478576
+  LCA: -36.476273
+  Greater Delta: LCA
+
+--- 50% Relabel ---
+  BoostIn: -36.475596
+  LCA: -36.474440
+  Greater Delta: LCA
+============================================================
+Dataset: naval
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: BoostIn
+
+--- 10% Relabel ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 15% Relabel ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 20% Relabel ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 25% Relabel ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: BoostIn
+
+--- 30% Relabel ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: BoostIn
+
+--- 35% Relabel ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: BoostIn
+
+--- 40% Relabel ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: BoostIn
+
+--- 45% Relabel ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 50% Relabel ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+============================================================
+Dataset: combined_cycle_power_plant
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -119.496900
+  LCA: -119.495610
+  Greater Delta: LCA
+
+--- 10% Relabel ---
+  BoostIn: -119.494023
+  LCA: -119.489179
+  Greater Delta: LCA
+
+--- 15% Relabel ---
+  BoostIn: -119.491604
+  LCA: -119.484727
+  Greater Delta: LCA
+
+--- 20% Relabel ---
+  BoostIn: -119.487595
+  LCA: -119.482405
+  Greater Delta: LCA
+
+--- 25% Relabel ---
+  BoostIn: -119.482243
+  LCA: -119.479749
+  Greater Delta: LCA
+
+--- 30% Relabel ---
+  BoostIn: -119.477702
+  LCA: -119.476627
+  Greater Delta: LCA
+
+--- 35% Relabel ---
+  BoostIn: -119.475200
+  LCA: -119.473239
+  Greater Delta: LCA
+
+--- 40% Relabel ---
+  BoostIn: -119.471964
+  LCA: -119.471920
+  Greater Delta: LCA
+
+--- 45% Relabel ---
+  BoostIn: -119.468609
+  LCA: -119.472090
+  Greater Delta: BoostIn
+
+--- 50% Relabel ---
+  BoostIn: -119.466269
+  LCA: -119.470486
+  Greater Delta: BoostIn
+============================================================
+Dataset: wine_quality
+============================================================
+
+--- 5% Relabel ---
+  BoostIn: -80.999983
+  LCA: -80.999978
+  Greater Delta: LCA
+
+--- 10% Relabel ---
+  BoostIn: -80.999973
+  LCA: -80.999963
+  Greater Delta: LCA
+
+--- 15% Relabel ---
+  BoostIn: -80.999955
+  LCA: -80.999942
+  Greater Delta: LCA
+
+--- 20% Relabel ---
+  BoostIn: -80.999941
+  LCA: -80.999927
+  Greater Delta: LCA
+
+--- 25% Relabel ---
+  BoostIn: -80.999922
+  LCA: -80.999919
+  Greater Delta: LCA
+
+--- 30% Relabel ---
+  BoostIn: -80.999907
+  LCA: -80.999901
+  Greater Delta: LCA
+
+--- 35% Relabel ---
+  BoostIn: -80.999895
+  LCA: -80.999888
+  Greater Delta: LCA
+
+--- 40% Relabel ---
+  BoostIn: -80.999884
+  LCA: -80.999877
+  Greater Delta: LCA
+
+--- 45% Relabel ---
+  BoostIn: -80.999871
+  LCA: -80.999864
+  Greater Delta: LCA
+
+--- 50% Relabel ---
+  BoostIn: -80.999863
+  LCA: -80.999853
+  Greater Delta: LCA

@@ -56,11 +56,12 @@ class GradientBoosting {
   // [n_nodes, n_feats, :] of (count, sum, weight)
   std::vector<std::vector<std::vector<HistBin>>> hist;
   std::vector<std::vector<std::unique_ptr<Tree>>> additive_trees;
-  std::vector<std::vector<double>> F;//, hessians, residuals; << Don't undertand the comment?!
+  std::vector<std::vector<double>> F;
 	std::vector<double> hessians,residuals;
   std::vector<double> feature_importance;
   std::vector<unsigned int> ids, fids;
   std::string experiment_path;
+  std::string custom_tests_path; //<++ MY CHANGE
   std::vector<double> test_sample_losses; //<++ MY CHANGE
   
 

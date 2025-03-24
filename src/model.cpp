@@ -284,6 +284,7 @@ void GradientBoosting::init() {
   H_tmp.resize(data->n_data);
   ids_tmp.resize(data->n_data);
   this->test_sample_losses.resize(data->n_data); //<<++ MY CHANGE
+  this->custom_tests_path = "";
 }
 
 /**
@@ -758,7 +759,7 @@ void Regression::test() {
   int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
   int n_testing = data->n_data; // Number of test samples
 
-  bool getInfluence = false; //Flag: Compute Influence?
+  bool getInfluence = true; //Flag: Compute Influence?
   InfluenceType inf = InfluenceType::BOOST_IN_LCA; //What method of influence?
   
   std::vector<std::vector<double>> influenceMatrix(
@@ -810,10 +811,10 @@ void Regression::test() {
         return;
     }
 
-    // Get the absolute path and append `loss_comp`
     std::string basePath(cwd);
-    std::cout << basePath << std::endl;
-    std::string infScorePath = basePath + "/single_test_relabel/influence_scores/";
+    
+    std::string infScorePath = basePath + "/influence_scores/"; 
+    
     // Write the BoostIn matrix to the CSV file
     std::string extension = inf == InfluenceType::BOOST_IN ? "BoostIn_Influence" : "LCA_Influence";
     std::string influence_file = infScorePath + config->formatted_output_name + extension + ".csv";
@@ -821,7 +822,7 @@ void Regression::test() {
     FILE *csv_file = fopen(influence_file.c_str(), "w");
     if (csv_file == NULL) {
       perror("Error opening influence file");
-      return;
+
     }
 
     // Write BoostIn influence scores
@@ -851,9 +852,8 @@ void Regression::test() {
   // Get the absolute path and append `loss_comp`
   std::string basePath(cwd);
   std::string lossCompPath = basePath + "/loss_comp/";
-  // Check if `lossCompPath` already contains `/single_test_relabel/`
-  if (lossCompPath.find("/single_test_relabel/") == std::string::npos) {
-      lossCompPath = basePath + "/single_test_relabel/loss_comp/";
+  if (lossCompPath.find(this->custom_tests_path) == std::string::npos) {
+      lossCompPath = basePath + "/" + this->custom_tests_path + "/" + "loss_comp/";
   } 
   
   std::cout << "Writing losses to " << config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;
@@ -1033,7 +1033,7 @@ double Regression::getLSLoss() {
   for (int i = 0; i < data->n_data; i++) {
     double ith_loss = (F[0][i] - data->Y[i]) * (F[0][i] - data->Y[i]); //<<++ MY CHANGE
     loss += ith_loss;
-    if(config->model_mode == "test") this->test_sample_losses[i] = ith_loss / data->n_data; //<<++ MY CHANGE
+    if(config->model_mode == "test") this->test_sample_losses[i] = ith_loss; //<<++ MY CHANGE
     
   }
   return loss / data->n_data;
@@ -1153,7 +1153,8 @@ void BinaryMart::test() {
   int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
   int n_testing = data->n_data; // Number of test samples
 
-  bool getInfluence = false; //Flag: Compute Influence?
+  bool getInfluence = true; //Flag: Compute Influence?
+
   InfluenceType inf = InfluenceType::BOOST_IN_LCA; //What method of influence?
   
   std::vector<std::vector<double>> influenceMatrix(
@@ -1191,6 +1192,7 @@ void BinaryMart::test() {
     }
   }
   if(getInfluence){
+    std::cout << "\nHERE\n";
     // Time the I/O operation
     io_timer.restart();
     // Open a CSV file for writing test sample losses
@@ -1202,16 +1204,16 @@ void BinaryMart::test() {
 
     // Get the absolute path and append `loss_comp`
     std::string basePath(cwd);
-    std::cout << basePath << std::endl;
-    std::string infScorePath = basePath + "/single_test_relabel/influence_scores/";
+    
+    std::string infScorePath = basePath + "/influence_scores/";
     // Write the BoostIn matrix to the CSV file
     std::string extension = inf == InfluenceType::BOOST_IN ? "BoostIn_Influence" : "LCA_Influence";
     std::string influence_file = infScorePath + config->formatted_output_name + extension + ".csv";
-
+    std::cout << infScorePath << std::endl;
     FILE *csv_file = fopen(influence_file.c_str(), "w");
     if (csv_file == NULL) {
       perror("Error opening influence file");
-      return;
+
     }
 
 
@@ -1239,9 +1241,8 @@ void BinaryMart::test() {
   }
   std::string basePath(cwd);
   std::string lossCompPath = basePath + "/loss_comp/";
-  // Check if `lossCompPath` already contains `/single_test_relabel/`
-  if (lossCompPath.find("/single_test_relabel/") == std::string::npos) {
-      lossCompPath = basePath + "/single_test_relabel/loss_comp/";
+  if (lossCompPath.find(this->custom_tests_path) == std::string::npos) {
+      lossCompPath = basePath + "/" + this->custom_tests_path + "/" + "loss_comp/";
   } 
   
   std::cout << "Writing losses to " << config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;
@@ -1509,7 +1510,7 @@ void Mart::test() {
     }
   }
 
-  bool getInfluence = false; // Flag: Compute Influence?
+  bool getInfluence = true; // Flag: Compute Influence?
 
   if (getInfluence) {
     int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
@@ -1518,7 +1519,7 @@ void Mart::test() {
     std::cout << "Number of Test Samples: " << n_testing << std::endl;
     std::cout << "Number of Train Samples: " << n_training << std::endl;
 
-    InfluenceType inf = InfluenceType::BOOST_IN; // What method of influence?
+    InfluenceType inf = InfluenceType::BOOST_IN_LCA; // What method of influence?
 
     std::vector<std::vector<double>> influenceMatrix(
         n_training,
@@ -1557,8 +1558,8 @@ void Mart::test() {
 
     // Get the absolute path and append `loss_comp`
     std::string basePath(cwd);
-    std::cout << basePath << std::endl;
-    std::string infScorePath = basePath + "/single_test_relabel/influence_scores/";
+    
+    std::string infScorePath = basePath + "/influence_scores/";
     // Write the BoostIn matrix to the CSV file
     std::string extension = inf == InfluenceType::BOOST_IN ? "BoostIn_Influence" : "LCA_Influence";
     std::string influence_file = infScorePath + config->formatted_output_name + extension + ".csv";
@@ -1566,7 +1567,7 @@ void Mart::test() {
     FILE *csv_file = fopen(influence_file.c_str(), "w");
     if (csv_file == NULL) {
       perror("Error opening influence file");
-      return;
+
     }
 
     // Write BoostIn influence scores
@@ -1593,9 +1594,8 @@ void Mart::test() {
   }
   std::string basePath(cwd);
   std::string lossCompPath = basePath + "/loss_comp/";
-  // Check if `lossCompPath` already contains `/single_test_relabel/`
-  if (lossCompPath.find("/single_test_relabel/") == std::string::npos) {
-      lossCompPath = basePath + "/single_test_relabel/loss_comp/";
+  if (lossCompPath.find(this->custom_tests_path) == std::string::npos) {
+      lossCompPath = basePath + "/" + this->custom_tests_path + "/" + "loss_comp/";
   } 
   
   std::cout << "Writing losses to " << config->model_pretrained_path + "_test_sample_losses.csv" << std::endl;

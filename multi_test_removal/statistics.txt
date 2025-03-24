@@ -1,0 +1,944 @@
+============================================================
+Dataset: compas
+============================================================
+
+--- 5% Removal ---
+  BoostIn: BoostIn file missing
+  LCA: LCA file missing
+
+--- 10% Removal ---
+  BoostIn: BoostIn file missing
+  LCA: LCA file missing
+
+--- 15% Removal ---
+  BoostIn: BoostIn file missing
+  LCA: LCA file missing
+
+--- 20% Removal ---
+  BoostIn: BoostIn file missing
+  LCA: LCA file missing
+
+--- 25% Removal ---
+  BoostIn: BoostIn file missing
+  LCA: LCA file missing
+
+--- 30% Removal ---
+  BoostIn: BoostIn file missing
+  LCA: LCA file missing
+
+--- 35% Removal ---
+  BoostIn: BoostIn file missing
+  LCA: LCA file missing
+
+--- 40% Removal ---
+  BoostIn: BoostIn file missing
+  LCA: LCA file missing
+
+--- 45% Removal ---
+  BoostIn: BoostIn file missing
+  LCA: LCA file missing
+
+--- 50% Removal ---
+  BoostIn: BoostIn file missing
+  LCA: LCA file missing
+============================================================
+Dataset: compas
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -76.837747
+  LCA: -76.832745
+  Greater Delta: LCA
+
+--- 10% Removal ---
+  BoostIn: -76.665082
+  LCA: -76.488592
+  Greater Delta: LCA
+
+--- 15% Removal ---
+  BoostIn: -76.399108
+  LCA: -76.001271
+  Greater Delta: LCA
+
+--- 20% Removal ---
+  BoostIn: -76.014418
+  LCA: -75.893149
+  Greater Delta: LCA
+
+--- 25% Removal ---
+  BoostIn: -75.800352
+  LCA: -74.931827
+  Greater Delta: LCA
+
+--- 30% Removal ---
+  BoostIn: -75.496601
+  LCA: -74.248355
+  Greater Delta: LCA
+
+--- 35% Removal ---
+  BoostIn: -74.634417
+  LCA: -73.543193
+  Greater Delta: LCA
+
+--- 40% Removal ---
+  BoostIn: -72.714474
+  LCA: -72.872066
+  Greater Delta: BoostIn
+
+--- 45% Removal ---
+  BoostIn: -66.497943
+  LCA: -71.932618
+  Greater Delta: BoostIn
+
+--- 50% Removal ---
+  BoostIn: -63.758732
+  LCA: -70.483174
+  Greater Delta: BoostIn
+============================================================
+Dataset: htru2
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -223.470537
+  LCA: -223.469725
+  Greater Delta: LCA
+
+--- 10% Removal ---
+  BoostIn: -223.416821
+  LCA: -223.415590
+  Greater Delta: LCA
+
+--- 15% Removal ---
+  BoostIn: -223.368745
+  LCA: -223.363537
+  Greater Delta: LCA
+
+--- 20% Removal ---
+  BoostIn: -223.270587
+  LCA: -223.272336
+  Greater Delta: BoostIn
+
+--- 25% Removal ---
+  BoostIn: -223.156131
+  LCA: -223.087594
+  Greater Delta: LCA
+
+--- 30% Removal ---
+  BoostIn: -223.020962
+  LCA: -222.832029
+  Greater Delta: LCA
+
+--- 35% Removal ---
+  BoostIn: -222.829725
+  LCA: -222.453676
+  Greater Delta: LCA
+
+--- 40% Removal ---
+  BoostIn: -222.649218
+  LCA: -222.086664
+  Greater Delta: LCA
+
+--- 45% Removal ---
+  BoostIn: -222.323952
+  LCA: -221.802806
+  Greater Delta: LCA
+
+--- 50% Removal ---
+  BoostIn: -222.056852
+  LCA: -221.452703
+  Greater Delta: LCA
+============================================================
+Dataset: credit_card
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -174.704802
+  LCA: -174.718809
+  Greater Delta: BoostIn
+
+--- 10% Removal ---
+  BoostIn: -174.667637
+  LCA: -174.692875
+  Greater Delta: BoostIn
+
+--- 15% Removal ---
+  BoostIn: -174.630208
+  LCA: -174.666046
+  Greater Delta: BoostIn
+
+--- 20% Removal ---
+  BoostIn: -174.576918
+  LCA: -174.640520
+  Greater Delta: BoostIn
+
+--- 25% Removal ---
+  BoostIn: -174.513880
+  LCA: -174.592945
+  Greater Delta: BoostIn
+
+--- 30% Removal ---
+  BoostIn: -174.431924
+  LCA: -174.536876
+  Greater Delta: BoostIn
+
+--- 35% Removal ---
+  BoostIn: -174.327559
+  LCA: -174.472141
+  Greater Delta: BoostIn
+
+--- 40% Removal ---
+  BoostIn: -174.170619
+  LCA: -174.377968
+  Greater Delta: BoostIn
+
+--- 45% Removal ---
+  BoostIn: -173.958941
+  LCA: -174.248709
+  Greater Delta: BoostIn
+
+--- 50% Removal ---
+  BoostIn: -173.591731
+  LCA: -174.052182
+  Greater Delta: BoostIn
+============================================================
+Dataset: flight_delays
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -174.737257
+  LCA: -174.742180
+  Greater Delta: BoostIn
+
+--- 10% Removal ---
+  BoostIn: -174.714805
+  LCA: -174.737382
+  Greater Delta: BoostIn
+
+--- 15% Removal ---
+  BoostIn: -174.688168
+  LCA: -174.721429
+  Greater Delta: BoostIn
+
+--- 20% Removal ---
+  BoostIn: -174.657747
+  LCA: -174.705970
+  Greater Delta: BoostIn
+
+--- 25% Removal ---
+  BoostIn: -174.610506
+  LCA: -174.685448
+  Greater Delta: BoostIn
+
+--- 30% Removal ---
+  BoostIn: -174.550371
+  LCA: -174.658356
+  Greater Delta: BoostIn
+
+--- 35% Removal ---
+  BoostIn: -174.464144
+  LCA: -174.629656
+  Greater Delta: BoostIn
+
+--- 40% Removal ---
+  BoostIn: -174.335046
+  LCA: -174.570492
+  Greater Delta: BoostIn
+
+--- 45% Removal ---
+  BoostIn: -174.118865
+  LCA: -174.497001
+  Greater Delta: BoostIn
+
+--- 50% Removal ---
+  BoostIn: -173.838381
+  LCA: -174.383301
+  Greater Delta: BoostIn
+============================================================
+Dataset: diabetes
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -174.727928
+  LCA: -174.741020
+  Greater Delta: BoostIn
+
+--- 10% Removal ---
+  BoostIn: -174.720414
+  LCA: -174.734235
+  Greater Delta: BoostIn
+
+--- 15% Removal ---
+  BoostIn: -174.700346
+  LCA: -174.725558
+  Greater Delta: BoostIn
+
+--- 20% Removal ---
+  BoostIn: -174.680154
+  LCA: -174.712222
+  Greater Delta: BoostIn
+
+--- 25% Removal ---
+  BoostIn: -174.648040
+  LCA: -174.693133
+  Greater Delta: BoostIn
+
+--- 30% Removal ---
+  BoostIn: -174.599758
+  LCA: -174.668836
+  Greater Delta: BoostIn
+
+--- 35% Removal ---
+  BoostIn: -174.539637
+  LCA: -174.632774
+  Greater Delta: BoostIn
+
+--- 40% Removal ---
+  BoostIn: -174.456226
+  LCA: -174.582270
+  Greater Delta: BoostIn
+
+--- 45% Removal ---
+  BoostIn: -174.336612
+  LCA: -174.510264
+  Greater Delta: BoostIn
+
+--- 50% Removal ---
+  BoostIn: -174.149917
+  LCA: -174.409159
+  Greater Delta: BoostIn
+============================================================
+Dataset: no_show
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -174.734286
+  LCA: -174.740344
+  Greater Delta: BoostIn
+
+--- 10% Removal ---
+  BoostIn: -174.710223
+  LCA: -174.727321
+  Greater Delta: BoostIn
+
+--- 15% Removal ---
+  BoostIn: -174.668918
+  LCA: -174.709049
+  Greater Delta: BoostIn
+
+--- 20% Removal ---
+  BoostIn: -174.624449
+  LCA: -174.681511
+  Greater Delta: BoostIn
+
+--- 25% Removal ---
+  BoostIn: -174.552423
+  LCA: -174.644382
+  Greater Delta: BoostIn
+
+--- 30% Removal ---
+  BoostIn: -174.460385
+  LCA: -174.588008
+  Greater Delta: BoostIn
+
+--- 35% Removal ---
+  BoostIn: -174.358554
+  LCA: -174.529589
+  Greater Delta: BoostIn
+
+--- 40% Removal ---
+  BoostIn: -174.234350
+  LCA: -174.445611
+  Greater Delta: BoostIn
+
+--- 45% Removal ---
+  BoostIn: -174.081397
+  LCA: -174.312673
+  Greater Delta: BoostIn
+
+--- 50% Removal ---
+  BoostIn: -173.874568
+  LCA: -174.160342
+  Greater Delta: BoostIn
+============================================================
+Dataset: german_credit
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -12.166609
+  LCA: -12.184612
+  Greater Delta: BoostIn
+
+--- 10% Removal ---
+  BoostIn: -11.915273
+  LCA: -11.946283
+  Greater Delta: BoostIn
+
+--- 15% Removal ---
+  BoostIn: -11.656783
+  LCA: -11.738756
+  Greater Delta: BoostIn
+
+--- 20% Removal ---
+  BoostIn: -11.425063
+  LCA: -11.326411
+  Greater Delta: LCA
+
+--- 25% Removal ---
+  BoostIn: -10.851634
+  LCA: -10.846097
+  Greater Delta: LCA
+
+--- 30% Removal ---
+  BoostIn: -10.471153
+  LCA: -10.404474
+  Greater Delta: LCA
+
+--- 35% Removal ---
+  BoostIn: -10.231622
+  LCA: -10.209695
+  Greater Delta: LCA
+
+--- 40% Removal ---
+  BoostIn: -9.852904
+  LCA: -9.951964
+  Greater Delta: BoostIn
+
+--- 45% Removal ---
+  BoostIn: -9.183653
+  LCA: -8.924656
+  Greater Delta: LCA
+
+--- 50% Removal ---
+  BoostIn: -8.345048
+  LCA: -8.235398
+  Greater Delta: LCA
+============================================================
+Dataset: spambase
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -57.195290
+  LCA: -57.168814
+  Greater Delta: LCA
+
+--- 10% Removal ---
+  BoostIn: -57.127644
+  LCA: -57.060749
+  Greater Delta: LCA
+
+--- 15% Removal ---
+  BoostIn: -57.069950
+  LCA: -56.997333
+  Greater Delta: LCA
+
+--- 20% Removal ---
+  BoostIn: -57.059411
+  LCA: -57.020607
+  Greater Delta: LCA
+
+--- 25% Removal ---
+  BoostIn: -57.073724
+  LCA: -56.992877
+  Greater Delta: LCA
+
+--- 30% Removal ---
+  BoostIn: -57.080153
+  LCA: -56.948585
+  Greater Delta: LCA
+
+--- 35% Removal ---
+  BoostIn: -57.075238
+  LCA: -56.869458
+  Greater Delta: LCA
+
+--- 40% Removal ---
+  BoostIn: -57.063380
+  LCA: -56.784903
+  Greater Delta: LCA
+
+--- 45% Removal ---
+  BoostIn: -57.050968
+  LCA: -56.652258
+  Greater Delta: LCA
+
+--- 50% Removal ---
+  BoostIn: -56.992960
+  LCA: -56.505555
+  Greater Delta: LCA
+============================================================
+Dataset: surgical
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -174.728935
+  LCA: -174.739409
+  Greater Delta: BoostIn
+
+--- 10% Removal ---
+  BoostIn: -174.707189
+  LCA: -174.725795
+  Greater Delta: BoostIn
+
+--- 15% Removal ---
+  BoostIn: -174.659661
+  LCA: -174.708965
+  Greater Delta: BoostIn
+
+--- 20% Removal ---
+  BoostIn: -174.586516
+  LCA: -174.673779
+  Greater Delta: BoostIn
+
+--- 25% Removal ---
+  BoostIn: -174.455969
+  LCA: -174.612688
+  Greater Delta: BoostIn
+
+--- 30% Removal ---
+  BoostIn: -174.242117
+  LCA: -174.538087
+  Greater Delta: BoostIn
+
+--- 35% Removal ---
+  BoostIn: -173.831056
+  LCA: -174.441144
+  Greater Delta: BoostIn
+
+--- 40% Removal ---
+  BoostIn: -173.130068
+  LCA: -174.246952
+  Greater Delta: BoostIn
+
+--- 45% Removal ---
+  BoostIn: -173.012359
+  LCA: -173.955714
+  Greater Delta: BoostIn
+
+--- 50% Removal ---
+  BoostIn: -173.009148
+  LCA: -173.793077
+  Greater Delta: BoostIn
+============================================================
+Dataset: vaccine
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -174.728520
+  LCA: -174.733296
+  Greater Delta: BoostIn
+
+--- 10% Removal ---
+  BoostIn: -174.690609
+  LCA: -174.710987
+  Greater Delta: BoostIn
+
+--- 15% Removal ---
+  BoostIn: -174.647865
+  LCA: -174.659663
+  Greater Delta: BoostIn
+
+--- 20% Removal ---
+  BoostIn: -174.576710
+  LCA: -174.585643
+  Greater Delta: BoostIn
+
+--- 25% Removal ---
+  BoostIn: -174.465420
+  LCA: -174.510027
+  Greater Delta: BoostIn
+
+--- 30% Removal ---
+  BoostIn: -174.254676
+  LCA: -174.349828
+  Greater Delta: BoostIn
+
+--- 35% Removal ---
+  BoostIn: -173.845601
+  LCA: -174.052738
+  Greater Delta: BoostIn
+
+--- 40% Removal ---
+  BoostIn: -172.989820
+  LCA: -173.672459
+  Greater Delta: BoostIn
+
+--- 45% Removal ---
+  BoostIn: -167.689151
+  LCA: -172.920653
+  Greater Delta: BoostIn
+
+--- 50% Removal ---
+  BoostIn: -160.666852
+  LCA: -172.091031
+  Greater Delta: BoostIn
+============================================================
+Dataset: dry_bean
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -169.702092
+  LCA: -169.879674
+  Greater Delta: BoostIn
+
+--- 10% Removal ---
+  BoostIn: -168.734371
+  LCA: -169.797326
+  Greater Delta: BoostIn
+
+--- 15% Removal ---
+  BoostIn: -163.684361
+  LCA: -169.605626
+  Greater Delta: BoostIn
+
+--- 20% Removal ---
+  BoostIn: -163.610823
+  LCA: -168.780601
+  Greater Delta: BoostIn
+
+--- 25% Removal ---
+  BoostIn: -163.264346
+  LCA: -168.387102
+  Greater Delta: BoostIn
+
+--- 30% Removal ---
+  BoostIn: -162.971964
+  LCA: -167.548047
+  Greater Delta: BoostIn
+
+--- 35% Removal ---
+  BoostIn: -162.974420
+  LCA: -166.667348
+  Greater Delta: BoostIn
+
+--- 40% Removal ---
+  BoostIn: -162.717003
+  LCA: -167.479967
+  Greater Delta: BoostIn
+
+--- 45% Removal ---
+  BoostIn: -162.291526
+  LCA: -167.713742
+  Greater Delta: BoostIn
+
+--- 50% Removal ---
+  BoostIn: -162.441514
+  LCA: -167.830051
+  Greater Delta: BoostIn
+============================================================
+Dataset: concrete
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -12.750161
+  LCA: -12.749942
+  Greater Delta: LCA
+
+--- 10% Removal ---
+  BoostIn: -12.749788
+  LCA: -12.749507
+  Greater Delta: LCA
+
+--- 15% Removal ---
+  BoostIn: -12.749338
+  LCA: -12.748202
+  Greater Delta: LCA
+
+--- 20% Removal ---
+  BoostIn: -12.744135
+  LCA: -12.742653
+  Greater Delta: LCA
+
+--- 25% Removal ---
+  BoostIn: -12.740436
+  LCA: -12.736593
+  Greater Delta: LCA
+
+--- 30% Removal ---
+  BoostIn: -12.735408
+  LCA: -12.727474
+  Greater Delta: LCA
+
+--- 35% Removal ---
+  BoostIn: -12.731104
+  LCA: -12.718914
+  Greater Delta: LCA
+
+--- 40% Removal ---
+  BoostIn: -12.727470
+  LCA: -12.722358
+  Greater Delta: LCA
+
+--- 45% Removal ---
+  BoostIn: -12.726222
+  LCA: -12.696158
+  Greater Delta: LCA
+
+--- 50% Removal ---
+  BoostIn: -12.714476
+  LCA: -12.616283
+  Greater Delta: LCA
+============================================================
+Dataset: energy_efficiency
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -9.499957
+  LCA: -9.499950
+  Greater Delta: LCA
+
+--- 10% Removal ---
+  BoostIn: -9.499941
+  LCA: -9.499938
+  Greater Delta: LCA
+
+--- 15% Removal ---
+  BoostIn: -9.499921
+  LCA: -9.499914
+  Greater Delta: LCA
+
+--- 20% Removal ---
+  BoostIn: -9.499895
+  LCA: -9.499904
+  Greater Delta: BoostIn
+
+--- 25% Removal ---
+  BoostIn: -9.499833
+  LCA: -9.499869
+  Greater Delta: BoostIn
+
+--- 30% Removal ---
+  BoostIn: -9.499534
+  LCA: -9.499771
+  Greater Delta: BoostIn
+
+--- 35% Removal ---
+  BoostIn: -9.499594
+  LCA: -9.499834
+  Greater Delta: BoostIn
+
+--- 40% Removal ---
+  BoostIn: -9.499676
+  LCA: -9.499849
+  Greater Delta: BoostIn
+
+--- 45% Removal ---
+  BoostIn: -9.499578
+  LCA: -9.499682
+  Greater Delta: BoostIn
+
+--- 50% Removal ---
+  BoostIn: -9.499514
+  LCA: -9.499768
+  Greater Delta: BoostIn
+============================================================
+Dataset: life_expectancy
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -36.499682
+  LCA: -36.499685
+  Greater Delta: BoostIn
+
+--- 10% Removal ---
+  BoostIn: -36.499149
+  LCA: -36.499307
+  Greater Delta: BoostIn
+
+--- 15% Removal ---
+  BoostIn: -36.498612
+  LCA: -36.499230
+  Greater Delta: BoostIn
+
+--- 20% Removal ---
+  BoostIn: -36.498336
+  LCA: -36.499023
+  Greater Delta: BoostIn
+
+--- 25% Removal ---
+  BoostIn: -36.498053
+  LCA: -36.498665
+  Greater Delta: BoostIn
+
+--- 30% Removal ---
+  BoostIn: -36.497857
+  LCA: -36.498425
+  Greater Delta: BoostIn
+
+--- 35% Removal ---
+  BoostIn: -36.497406
+  LCA: -36.497986
+  Greater Delta: BoostIn
+
+--- 40% Removal ---
+  BoostIn: -36.497277
+  LCA: -36.497509
+  Greater Delta: BoostIn
+
+--- 45% Removal ---
+  BoostIn: -36.497367
+  LCA: -36.496673
+  Greater Delta: LCA
+
+--- 50% Removal ---
+  BoostIn: -36.496979
+  LCA: -36.496374
+  Greater Delta: LCA
+============================================================
+Dataset: naval
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 10% Removal ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 15% Removal ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 20% Removal ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 25% Removal ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 30% Removal ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 35% Removal ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 40% Removal ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 45% Removal ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+
+--- 50% Removal ---
+  BoostIn: -149.000000
+  LCA: -149.000000
+  Greater Delta: LCA
+============================================================
+Dataset: combined_cycle_power_plant
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -119.499785
+  LCA: -119.499735
+  Greater Delta: LCA
+
+--- 10% Removal ---
+  BoostIn: -119.499714
+  LCA: -119.499436
+  Greater Delta: LCA
+
+--- 15% Removal ---
+  BoostIn: -119.499595
+  LCA: -119.498944
+  Greater Delta: LCA
+
+--- 20% Removal ---
+  BoostIn: -119.499430
+  LCA: -119.499108
+  Greater Delta: LCA
+
+--- 25% Removal ---
+  BoostIn: -119.499432
+  LCA: -119.498796
+  Greater Delta: LCA
+
+--- 30% Removal ---
+  BoostIn: -119.499395
+  LCA: -119.498394
+  Greater Delta: LCA
+
+--- 35% Removal ---
+  BoostIn: -119.499097
+  LCA: -119.497358
+  Greater Delta: LCA
+
+--- 40% Removal ---
+  BoostIn: -119.498647
+  LCA: -119.496544
+  Greater Delta: LCA
+
+--- 45% Removal ---
+  BoostIn: -119.498098
+  LCA: -119.496682
+  Greater Delta: LCA
+
+--- 50% Removal ---
+  BoostIn: -119.497438
+  LCA: -119.495657
+  Greater Delta: LCA
+============================================================
+Dataset: wine_quality
+============================================================
+
+--- 5% Removal ---
+  BoostIn: -80.999990
+  LCA: -80.999992
+  Greater Delta: BoostIn
+
+--- 10% Removal ---
+  BoostIn: -80.999987
+  LCA: -80.999987
+  Greater Delta: BoostIn
+
+--- 15% Removal ---
+  BoostIn: -80.999984
+  LCA: -80.999983
+  Greater Delta: LCA
+
+--- 20% Removal ---
+  BoostIn: -80.999981
+  LCA: -80.999975
+  Greater Delta: LCA
+
+--- 25% Removal ---
+  BoostIn: -80.999975
+  LCA: -80.999967
+  Greater Delta: LCA
+
+--- 30% Removal ---
+  BoostIn: -80.999966
+  LCA: -80.999954
+  Greater Delta: LCA
+
+--- 35% Removal ---
+  BoostIn: -80.999955
+  LCA: -80.999945
+  Greater Delta: LCA
+
+--- 40% Removal ---
+  BoostIn: -80.999942
+  LCA: -80.999940
+  Greater Delta: LCA
+
+--- 45% Removal ---
+  BoostIn: -80.999935
+  LCA: -80.999929
+  Greater Delta: LCA
+
+--- 50% Removal ---
+  BoostIn: -80.999919
+  LCA: -80.999922
+  Greater Delta: BoostIn

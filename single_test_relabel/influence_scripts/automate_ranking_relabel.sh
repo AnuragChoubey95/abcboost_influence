@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # This script automatically ranks training samples for a given dataset substring
 # and removes top-k influential samples at various percentages.
@@ -59,8 +59,10 @@ fi
 
 echo "Number of columns in the influence files: $num_columns"
 
-# 6) Generate random unique indices between 0 and (num_columns - 1) for top 100
-indices=($(python3 -c "import random; print(' '.join(map(str, random.sample(range(0, $num_columns), 100))))"))
+
+# Generate random unique indices between 0 and (num_columns - 1) with seed=42
+indices=($(python3 -c "import random; random.seed(42); print(' '.join(map(str, random.sample(range(0, $num_columns), 100))))"))
+
 
 # 7) Define percentages
 percentages=(0.1 0.5 1 1.5 2)

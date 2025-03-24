@@ -9,3 +9,4 @@ abcboost*
 *.model
 *log
 *.prediction
+*.csv

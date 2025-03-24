@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 # Check if an argument is provided
 if [ $# -eq 0 ]; then
@@ -19,8 +19,8 @@ fi
 
 echo "Number of columns in the influence files: $num_columns"
 
-# Generate random unique indices between 0 and (num_columns - 1)
-indices=($(python3 -c "import random; print(' '.join(map(str, random.sample(range(0, $num_columns), 100))))"))
+# Generate random unique indices between 0 and (num_columns - 1) with seed=42
+indices=($(python3 -c "import random; random.seed(42); print(' '.join(map(str, random.sample(range(0, $num_columns), 100))))"))
 
 # Define percentages
 percentages=(0.1 0.5 1 1.5 2)

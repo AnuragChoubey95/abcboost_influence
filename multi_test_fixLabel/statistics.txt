@@ -1,0 +1,289 @@
+
+========================================
+Dataset: compas
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 38
+    Top 10% -> Mislabeled count: 83
+    Top 15% -> Mislabeled count: 155
+    Top 20% -> Mislabeled count: 226
+    Top 25% -> Mislabeled count: 306
+    Top 30% -> Mislabeled count: 398
+  Method: LCA
+    Top 5% -> Mislabeled count: 38
+    Top 10% -> Mislabeled count: 85
+    Top 15% -> Mislabeled count: 146
+    Top 20% -> Mislabeled count: 215
+    Top 25% -> Mislabeled count: 269
+    Top 30% -> Mislabeled count: 348
+
+========================================
+Dataset: htru2
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 2
+    Top 10% -> Mislabeled count: 4
+    Top 15% -> Mislabeled count: 5
+    Top 20% -> Mislabeled count: 6
+    Top 25% -> Mislabeled count: 11
+    Top 30% -> Mislabeled count: 15
+  Method: LCA
+    Top 5% -> Mislabeled count: 2
+    Top 10% -> Mislabeled count: 4
+    Top 15% -> Mislabeled count: 6
+    Top 20% -> Mislabeled count: 8
+    Top 25% -> Mislabeled count: 11
+    Top 30% -> Mislabeled count: 14
+
+========================================
+Dataset: credit_card
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 211
+    Top 10% -> Mislabeled count: 423
+    Top 15% -> Mislabeled count: 647
+    Top 20% -> Mislabeled count: 901
+    Top 25% -> Mislabeled count: 1138
+    Top 30% -> Mislabeled count: 1403
+  Method: LCA
+    Top 5% -> Mislabeled count: 180
+    Top 10% -> Mislabeled count: 368
+    Top 15% -> Mislabeled count: 585
+    Top 20% -> Mislabeled count: 832
+    Top 25% -> Mislabeled count: 1097
+    Top 30% -> Mislabeled count: 1374
+
+========================================
+Dataset: flight_delays
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 233
+    Top 10% -> Mislabeled count: 464
+    Top 15% -> Mislabeled count: 698
+    Top 20% -> Mislabeled count: 925
+    Top 25% -> Mislabeled count: 1182
+    Top 30% -> Mislabeled count: 1442
+  Method: LCA
+    Top 5% -> Mislabeled count: 205
+    Top 10% -> Mislabeled count: 428
+    Top 15% -> Mislabeled count: 643
+    Top 20% -> Mislabeled count: 893
+    Top 25% -> Mislabeled count: 1124
+    Top 30% -> Mislabeled count: 1349
+
+========================================
+Dataset: diabetes
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 245
+    Top 10% -> Mislabeled count: 497
+    Top 15% -> Mislabeled count: 728
+    Top 20% -> Mislabeled count: 974
+    Top 25% -> Mislabeled count: 1226
+    Top 30% -> Mislabeled count: 1454
+  Method: LCA
+    Top 5% -> Mislabeled count: 226
+    Top 10% -> Mislabeled count: 465
+    Top 15% -> Mislabeled count: 696
+    Top 20% -> Mislabeled count: 932
+    Top 25% -> Mislabeled count: 1168
+    Top 30% -> Mislabeled count: 1416
+
+========================================
+Dataset: no_show
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 188
+    Top 10% -> Mislabeled count: 368
+    Top 15% -> Mislabeled count: 567
+    Top 20% -> Mislabeled count: 750
+    Top 25% -> Mislabeled count: 943
+    Top 30% -> Mislabeled count: 1144
+  Method: LCA
+    Top 5% -> Mislabeled count: 221
+    Top 10% -> Mislabeled count: 434
+    Top 15% -> Mislabeled count: 658
+    Top 20% -> Mislabeled count: 880
+    Top 25% -> Mislabeled count: 1106
+    Top 30% -> Mislabeled count: 1335
+
+========================================
+Dataset: german_credit
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 4
+    Top 10% -> Mislabeled count: 8
+    Top 15% -> Mislabeled count: 11
+    Top 20% -> Mislabeled count: 15
+    Top 25% -> Mislabeled count: 22
+    Top 30% -> Mislabeled count: 27
+  Method: LCA
+    Top 5% -> Mislabeled count: 3
+    Top 10% -> Mislabeled count: 4
+    Top 15% -> Mislabeled count: 8
+    Top 20% -> Mislabeled count: 13
+    Top 25% -> Mislabeled count: 18
+    Top 30% -> Mislabeled count: 27
+
+========================================
+Dataset: spambase
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 30
+    Top 10% -> Mislabeled count: 78
+    Top 15% -> Mislabeled count: 108
+    Top 20% -> Mislabeled count: 147
+    Top 25% -> Mislabeled count: 196
+    Top 30% -> Mislabeled count: 250
+  Method: LCA
+    Top 5% -> Mislabeled count: 21
+    Top 10% -> Mislabeled count: 69
+    Top 15% -> Mislabeled count: 113
+    Top 20% -> Mislabeled count: 147
+    Top 25% -> Mislabeled count: 204
+    Top 30% -> Mislabeled count: 266
+
+========================================
+Dataset: surgical
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 133
+    Top 10% -> Mislabeled count: 307
+    Top 15% -> Mislabeled count: 497
+    Top 20% -> Mislabeled count: 719
+    Top 25% -> Mislabeled count: 1011
+    Top 30% -> Mislabeled count: 1361
+  Method: LCA
+    Top 5% -> Mislabeled count: 101
+    Top 10% -> Mislabeled count: 242
+    Top 15% -> Mislabeled count: 414
+    Top 20% -> Mislabeled count: 636
+    Top 25% -> Mislabeled count: 880
+    Top 30% -> Mislabeled count: 1135
+
+========================================
+Dataset: vaccine
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 172
+    Top 10% -> Mislabeled count: 325
+    Top 15% -> Mislabeled count: 472
+    Top 20% -> Mislabeled count: 619
+    Top 25% -> Mislabeled count: 780
+    Top 30% -> Mislabeled count: 936
+  Method: LCA
+    Top 5% -> Mislabeled count: 85
+    Top 10% -> Mislabeled count: 182
+    Top 15% -> Mislabeled count: 303
+    Top 20% -> Mislabeled count: 441
+    Top 25% -> Mislabeled count: 591
+    Top 30% -> Mislabeled count: 748
+
+========================================
+Dataset: dry_bean
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 306
+    Top 10% -> Mislabeled count: 530
+    Top 15% -> Mislabeled count: 718
+    Top 20% -> Mislabeled count: 875
+    Top 25% -> Mislabeled count: 1019
+    Top 30% -> Mislabeled count: 1154
+  Method: LCA
+    Top 5% -> Mislabeled count: 303
+    Top 10% -> Mislabeled count: 518
+    Top 15% -> Mislabeled count: 710
+    Top 20% -> Mislabeled count: 882
+    Top 25% -> Mislabeled count: 1045
+    Top 30% -> Mislabeled count: 1178
+
+========================================
+Dataset: concrete
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 25
+    Top 10% -> Mislabeled count: 42
+    Top 15% -> Mislabeled count: 58
+    Top 20% -> Mislabeled count: 66
+    Top 25% -> Mislabeled count: 78
+    Top 30% -> Mislabeled count: 89
+  Method: LCA
+    Top 5% -> Mislabeled count: 25
+    Top 10% -> Mislabeled count: 47
+    Top 15% -> Mislabeled count: 64
+    Top 20% -> Mislabeled count: 81
+    Top 25% -> Mislabeled count: 92
+    Top 30% -> Mislabeled count: 99
+
+========================================
+Dataset: energy_efficiency
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 19
+    Top 10% -> Mislabeled count: 35
+    Top 15% -> Mislabeled count: 49
+    Top 20% -> Mislabeled count: 58
+    Top 25% -> Mislabeled count: 61
+    Top 30% -> Mislabeled count: 70
+  Method: LCA
+    Top 5% -> Mislabeled count: 13
+    Top 10% -> Mislabeled count: 22
+    Top 15% -> Mislabeled count: 28
+    Top 20% -> Mislabeled count: 32
+    Top 25% -> Mislabeled count: 36
+    Top 30% -> Mislabeled count: 40
+
+========================================
+Dataset: life_expectancy
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 60
+    Top 10% -> Mislabeled count: 91
+    Top 15% -> Mislabeled count: 126
+    Top 20% -> Mislabeled count: 155
+    Top 25% -> Mislabeled count: 194
+    Top 30% -> Mislabeled count: 239
+  Method: LCA
+    Top 5% -> Mislabeled count: 70
+    Top 10% -> Mislabeled count: 112
+    Top 15% -> Mislabeled count: 147
+    Top 20% -> Mislabeled count: 178
+    Top 25% -> Mislabeled count: 216
+    Top 30% -> Mislabeled count: 253
+
+========================================
+Dataset: naval
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 126
+    Top 10% -> Mislabeled count: 253
+    Top 15% -> Mislabeled count: 354
+    Top 20% -> Mislabeled count: 461
+    Top 25% -> Mislabeled count: 604
+    Top 30% -> Mislabeled count: 752
+  Method: LCA
+    Top 5% -> Mislabeled count: 105
+    Top 10% -> Mislabeled count: 237
+    Top 15% -> Mislabeled count: 326
+    Top 20% -> Mislabeled count: 459
+    Top 25% -> Mislabeled count: 587
+    Top 30% -> Mislabeled count: 698
+
+========================================
+Dataset: combined_cycle_power_plant
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 94
+    Top 10% -> Mislabeled count: 191
+    Top 15% -> Mislabeled count: 289
+    Top 20% -> Mislabeled count: 388
+    Top 25% -> Mislabeled count: 459
+    Top 30% -> Mislabeled count: 622
+  Method: LCA
+    Top 5% -> Mislabeled count: 82
+    Top 10% -> Mislabeled count: 143
+    Top 15% -> Mislabeled count: 246
+    Top 20% -> Mislabeled count: 326
+    Top 25% -> Mislabeled count: 392
+    Top 30% -> Mislabeled count: 477
+
+========================================
+Dataset: wine_quality
+  Method: BoostIn
+    Top 5% -> Mislabeled count: 130
+    Top 10% -> Mislabeled count: 235
+    Top 15% -> Mislabeled count: 311
+    Top 20% -> Mislabeled count: 368
+    Top 25% -> Mislabeled count: 416
+    Top 30% -> Mislabeled count: 461
+  Method: LCA
+    Top 5% -> Mislabeled count: 141
+    Top 10% -> Mislabeled count: 245
+    Top 15% -> Mislabeled count: 286
+    Top 20% -> Mislabeled count: 325
+    Top 25% -> Mislabeled count: 363
+    Top 30% -> Mislabeled count: 400

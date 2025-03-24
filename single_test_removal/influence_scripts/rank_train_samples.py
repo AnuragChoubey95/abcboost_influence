@@ -2,9 +2,9 @@ import numpy as np
 import argparse
 import os
 
-def process_boostin_scores(input_csv, column_index, output_file):
+def process_infl_scores(input_csv, column_index, output_file):
     """
-    Processes the BoostIn scores from a CSV file and ranks rows based on a specific column.
+    Processes the influence scores from a CSV file and ranks rows based on a specific column.
     
     Args:
         input_csv (str): Path to the input CSV file.
@@ -26,14 +26,14 @@ def process_boostin_scores(input_csv, column_index, output_file):
         print(data[:, -1])
 
     except ValueError as e:
-        print(f"\n❌ Error reading file: {file_path}")
-        print(f"⚠️ {str(e)}")
+        print(f"\nError reading file: {file_path}")
+        print(f"{str(e)}")
         print("Possible causes: missing/extra columns, incorrect delimiter, or corrupted file.")
         return  # Exit function to avoid further errors
 
     # Check for invalid or missing data
     if np.isnan(data).any():
-        print(f"⚠️ Warning: Missing or invalid data found in {file_path}. Replacing NaNs with 0.")
+        print(f"Warning: Missing or invalid data found in {file_path}. Replacing NaNs with 0.")
         data = np.nan_to_num(data, nan=0.0)
 
     # Ensure the column index is within range
@@ -43,7 +43,7 @@ def process_boostin_scores(input_csv, column_index, output_file):
     # Extract the specified column
     column_values = data[:, column_index]
 
-    # Rank rows based on the specified column in descending order
+    # Rank rows based on most positive to most negative
     ranked_indices = np.argsort(-column_values)
 
     # Save the ranked indices and their scores to the output file
@@ -53,12 +53,12 @@ def process_boostin_scores(input_csv, column_index, output_file):
         for index in ranked_indices:
             f.write(f"{index},{column_values[index]:.6f}\n")
 
-    print(f"✅ Ranked rows by column {column_index} have been saved to {output_path}")
+    print(f"Ranked rows by column {column_index} have been saved to {output_path}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Process BoostIn scores and rank rows by a specific column.")
-    parser.add_argument("input_csv", type=str, help="Path to the input CSV file containing BoostIn scores.")
+    parser = argparse.ArgumentParser(description="Processinfluence scores and rank rows by a specific column.")
+    parser.add_argument("input_csv", type=str, help="Path to the input CSV file containing influence scores.")
     parser.add_argument("output_prefix", type=str, help="Prefix for the output file. The column index will be appended.")
     parser.add_argument("column_index", type=int, help="Column index to rank the rows by (0-based index).")
 
@@ -72,7 +72,7 @@ def main():
     output_file = f"{args.output_prefix}_column_{args.column_index}{suffix}.csv"
 
     # Process the BoostIn scores
-    process_boostin_scores(args.input_csv, args.column_index, output_file)
+    process_infl_scores(args.input_csv, args.column_index, output_file)
     print(f"Ranked rows by column {args.column_index} have been saved to {output_file}")
 
 if __name__ == "__main__":
