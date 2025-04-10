@@ -69,7 +69,7 @@ def main():
     args = parser.parse_args()
 
     # Call the filter_data function with parsed arguments
-    rank_file_path = f"../influence_scores/{args.ranking_file}"
+    rank_file_path = f"../ranked_rows/{args.ranking_file}"
     data_file_path = f"../../data/{args.data_file}"
     output_path = f"../custom_data/{args.output_dirID}/"
     filter_data(rank_file_path, data_file_path, args.percentage, output_path)

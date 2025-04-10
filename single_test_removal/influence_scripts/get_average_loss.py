@@ -5,6 +5,38 @@ from collections import defaultdict
 import time
 import argparse
 
+def parse_dataset_task_map(sh_file_path):
+    """
+    Parses the dataset_task_map.sh file and returns a Python dictionary.
+    """
+    dataset_task = {}
+    with open(sh_file_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("//") or line.startswith("declare"):
+                continue
+            match = re.match(r'\[(.+?)\]="(.+?)"', line)
+            if match:
+                key, value = match.groups()
+                dataset_task[key] = value
+    return dataset_task
+
+
+def construct_loss_filename(substring, task_type):
+    """
+    Constructs the expected original loss filename for a given dataset and task type.
+    """
+    if task_type == "binary":
+        return f"{substring}.train.csv_robustlogit_J20_v0.1.model_test_sample_losses.csv"
+    elif task_type == "multiclass":
+        return f"{substring}.train.csv_mart_J20_v0.1.model_test_sample_losses.csv"
+    elif task_type == "regression":
+        return f"{substring}.train.csv_regression_J20_v0.1_p2.model_test_sample_losses.csv"
+    else:
+        raise ValueError(f"Unsupported task type: {task_type}")
+
+
+
 def preprocess_loss_directory(loss_dir, substring):
     """
     Preprocess the directory to extract unique columns and percentages.
@@ -45,7 +77,7 @@ def preprocess_loss_directory(loss_dir, substring):
     return unique_columns, unique_percentages, loss_files
 
 
-def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_files, substring):
+def compare_losses_and_rank(original_loss_dir, influence_loss_dir, unique_columns, unique_percentages, loss_files, substring):
     """
     Compare losses for BoostIn and LCA methods with the original loss file and rank them.
 
@@ -63,11 +95,13 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_f
         "LCA": defaultdict(list)
     }
 
+    dataset_task_map = parse_dataset_task_map("dataset_task_map.sh")
+
     # Load the original loss file
-    original_loss_file = f"{substring}.train.csv_mart_J20_v0.1.model_test_sample_losses.csv"
+    original_loss_file = construct_loss_filename(substring, dataset_task_map[substring])
     print(f"Loading original loss file: {original_loss_file}")
     time.sleep(0.5)
-    original_data = np.loadtxt(os.path.join(loss_dir, original_loss_file), delimiter=',')
+    original_data = np.loadtxt(os.path.join(original_loss_dir, original_loss_file), delimiter=',')
     original_indices = original_data[:, 0]
     original_losses = original_data[:, 1]
 
@@ -97,22 +131,20 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_f
                 column_index = int(column_match.group(1))
 
                 # Load the loss file
-                losses_data = np.loadtxt(os.path.join(loss_dir, file), delimiter=',')
-                losses_indices = losses_data[:, 0]
-                losses_values = losses_data[:, 1]
+                losses_data = np.loadtxt(os.path.join(influence_loss_dir, file), delimiter=',')
+
+                # losses_data is 1D: [index, loss]
+                if losses_data.ndim != 1 or len(losses_data) != 2:
+                    print(f"Unexpected format in {file}: {losses_data}")
+                    continue
+
+                _ , current_loss = losses_data
 
                 # Find the matching index in the original file
-                if column_index in losses_indices:
-                    if column_index not in original_indices:
-                        print(f"Error: Column index {column_index} not found in original indices.")
-                        # continue
+                if column_index in original_indices:
                     idx_in_original = np.where(original_indices == column_index)[0][0]
-                    idx_in_losses = np.where(losses_indices == column_index)[0][0]
-
                     original_loss = original_losses[idx_in_original]
-                    current_loss = losses_values[idx_in_losses]
                     delta_loss = current_loss - original_loss
-
                     print(f"    Test Index: {column_index}")
                     print(f"      Original Loss: {original_loss:.15f}")
                     print(f"      Current Loss: {current_loss:.15f}")
@@ -146,10 +178,11 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_f
             f.write(f"\n  Percentage {percentage}%:")
             f.write(f"\n    BoostIn Average Loss Increase: {boostin_avg:.15f}")
             f.write(f"\n    LCA Average Loss Increase: {lca_avg:.15f}")
-            if boostin_avg < lca_avg:
-                method_ranking.append((percentage, "LCA", lca_avg))
-            else:
+            if boostin_avg > lca_avg:
                 method_ranking.append((percentage, "BoostIn", boostin_avg))
+            else:
+                method_ranking.append((percentage, "LCA", lca_avg))
+
         f.write("\n-----------------------")
         print("\nFinal Rankings by Percentage:")
         f.write("\nFinal Rankings by Percentage:\n")
@@ -168,10 +201,10 @@ def main():
     substring = args.substring
 
     # Directory containing loss files
-    loss_dir = os.path.join(os.path.dirname(__file__), "../loss_comp/")
-
+    original_loss_dir = os.path.join(os.path.dirname(__file__), "../../loss_comp/")
+    influence_loss_dir = os.path.join(os.path.dirname(__file__), "loss_comp/")
     # Preprocess the directory
-    unique_columns, unique_percentages, loss_files = preprocess_loss_directory(loss_dir, substring)
+    unique_columns, unique_percentages, loss_files = preprocess_loss_directory(influence_loss_dir, substring)
 
     # Print unique columns and percentages
     print(f"Unique Columns: {sorted(unique_columns)}")
@@ -179,7 +212,7 @@ def main():
     time.sleep(0.5)
 
     # Compare losses and rank methods
-    compare_losses_and_rank(loss_dir, unique_columns, unique_percentages, loss_files, substring)
+    compare_losses_and_rank(original_loss_dir, influence_loss_dir, unique_columns, unique_percentages, loss_files, substring)
 
 
 if __name__ == "__main__":

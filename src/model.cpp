@@ -284,7 +284,7 @@ void GradientBoosting::init() {
   H_tmp.resize(data->n_data);
   ids_tmp.resize(data->n_data);
   this->test_sample_losses.resize(data->n_data); //<<++ MY CHANGE
-  this->custom_tests_path = "";
+  this->custom_tests_path = "single_test_relabel"; //<<WRITE LOSS HERE FOR EXP TYPE
 }
 
 /**
@@ -759,7 +759,7 @@ void Regression::test() {
   int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
   int n_testing = data->n_data; // Number of test samples
 
-  bool getInfluence = true; //Flag: Compute Influence?
+  bool getInfluence = false; //Flag: Compute Influence?
   InfluenceType inf = InfluenceType::BOOST_IN_LCA; //What method of influence?
   
   std::vector<std::vector<double>> influenceMatrix(
@@ -910,11 +910,11 @@ void Regression::calculateBoostInInfluence_LCA(
   int test_leaf_index = additive_trees[t][0]->test_leaf_indices[test_index];
 
   int lcaNodeIdx = additive_trees[t][0]->findLCA(train_leaf_index,test_leaf_index);
+  double lcaNodeWt = additive_trees[t][0]->calculateDepthWeight(lcaNodeIdx);
   assert(lcaNodeIdx != -1 && "LCA computation failed: LCA index is -1");
 
   double lcaPredict_v = additive_trees[t][0]->nodes[lcaNodeIdx].predict_v;
   *lca_prediction_t_j_i += config->model_shrinkage * lcaPredict_v;
-  // std::cout << lca_prediction_t_j_i;
 
   double prediction_test = *lca_prediction_t_j_i; //intermediate prediction
   double residual_test = prediction_test - data->Y[test_index];
@@ -923,7 +923,7 @@ void Regression::calculateBoostInInfluence_LCA(
   double eta = config->model_shrinkage;
 
   // Update BoostIn influence matrix
-  (*boostInMatrix_LCA)[train_index][test_index] += dL_dy_hat * eta * dTheta_dWi;
+  (*boostInMatrix_LCA)[train_index][test_index] += lcaNodeWt * dL_dy_hat * eta * dTheta_dWi;
 }
 
 
@@ -1153,9 +1153,9 @@ void BinaryMart::test() {
   int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
   int n_testing = data->n_data; // Number of test samples
 
-  bool getInfluence = true; //Flag: Compute Influence?
+  bool getInfluence = false; //Flag: Compute Influence?
 
-  InfluenceType inf = InfluenceType::BOOST_IN_LCA; //What method of influence?
+  InfluenceType inf = InfluenceType::BOOST_IN; //What method of influence?
   
   std::vector<std::vector<double>> influenceMatrix(
       n_training,
@@ -1510,7 +1510,7 @@ void Mart::test() {
     }
   }
 
-  bool getInfluence = true; // Flag: Compute Influence?
+  bool getInfluence = false; // Flag: Compute Influence?
 
   if (getInfluence) {
     int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
@@ -1519,7 +1519,7 @@ void Mart::test() {
     std::cout << "Number of Test Samples: " << n_testing << std::endl;
     std::cout << "Number of Train Samples: " << n_training << std::endl;
 
-    InfluenceType inf = InfluenceType::BOOST_IN_LCA; // What method of influence?
+    InfluenceType inf = InfluenceType::BOOST_IN; // What method of influence?
 
     std::vector<std::vector<double>> influenceMatrix(
         n_training,
@@ -1668,7 +1668,7 @@ void Mart::calculateBoostInInfluence_LCA(
   (*boostInMatrix_LCA)[train_index][test_index] += lcaNodeWt * dL_dy_hat * eta * dTheta_dWi;
 
   // Ensure that the updated value is not null
-  assert((*boostInMatrix_LCA)[train_index][test_index] != 0 && "BoostIn influence matrix entry is null after update");
+  // assert((*boostInMatrix_LCA)[train_index][test_index] != NULL && "BoostIn influence matrix entry is null after update");
 }
 
 

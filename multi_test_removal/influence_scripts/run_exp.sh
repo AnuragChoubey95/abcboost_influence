@@ -1,29 +1,37 @@
 #!/bin/zsh
 
-# Define dataset-task map using arrays
-dataset_names=("compas" "htru2" "credit_card" "flight_delays" "diabetes" "no_show" "german_credit" "spambase" "surgical" "vaccine"
-               "dry_bean"
-               "concrete" "energy_efficiency" "life_expectancy" "naval" "combined_cycle_power_plant" "wine_quality")
+# Define dataset-task map using associative array
+declare -A dataset_task=(
+    [bank_marketing]="binary"
+    [htru2]="binary"
+    [credit_card]="binary"
+    [diabetes]="binary"
+    [german]="binary"
+    [spambase]="binary"
+    [flight_delays]="binary"
+    [no_show]="binary"
 
-dataset_tasks=("binary" "binary" "binary" "binary" "binary" "binary" "binary" "binary" "binary" "binary"
-               "multiclass"
-               "regression" "regression" "regression" "regression" "regression" "regression")
+    [dry_bean]="multiclass"
+    [adult]="multiclass"
+
+    [concrete]="regression"
+    [energy]="regression"
+    [power_plant]="regression"
+    [wine_quality]="regression"
+    [life_expectancy]="regression"
+)
 
 # Function to get task type for a dataset
 get_task_type() {
     local dataset=$1
-    for i in {1..${#dataset_names[@]}}; do
-        if [[ "${dataset_names[$i]}" == "$dataset" ]]; then
-            echo "${dataset_tasks[$i]}"
-            return
-        fi
-    done
-    echo "unknown"
+    echo "${dataset_task[$dataset]:-unknown}"
 }
 
 # Loop through each dataset and execute scripts
-for dataset in "${dataset_names[@]}"; do
+for dataset in "${(@k)dataset_task}"; do
     echo "Processing dataset: $dataset"
+    task_type=$(get_task_type "$dataset")
+    echo "Task type: $task_type"
 
     python3 split_and_rank.py "$dataset"
     python3 create_training_data.py "$dataset"

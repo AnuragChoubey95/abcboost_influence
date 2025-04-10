@@ -1,23 +1,20 @@
 declare -A dataset_task=(
-    [compas]="binary"
-    [htru2]="binary"
-    [credit_card]="binary"
-    [flight_delays]="binary"
-    [diabetes]="binary"
+    [bank_marketing]="binary" //
+    [htru2]="binary" //
+    [credit_card]="binary" 
+    [diabetes]="binary" 
+    [german]="binary" 
+    [spambase]="binary" 
+    [flight_delays]="binary" 
     [no_show]="binary"
-    [german_credit]="binary"
-    [spambase]="binary"
-    [surgical]="binary"
-    [vaccine]="binary"
-
-    [dry_bean]="multiclass"
     
-    [concrete]="regression"
-    [energy_efficiency]="regression"
-    [life_expectancy]="regression"
-    [naval]="regression"
-    [combined_cycle_power_plant]="regression"
-    [wine_quality]="regression"
-   
+    [dry_bean]="multiclass" 
+    [adult]="multiclass" 
+    
+    [concrete]="regression" 
+    [energy]="regression" 
+    [power_plant]="regression" 
+    [wine_quality]="regression"  
+    [life_expectancy]="regression" 
 )
 

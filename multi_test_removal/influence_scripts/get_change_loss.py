@@ -49,7 +49,7 @@ def write_statistics(dataset_substring, dataset_task_map):
 
     method = "robustlogit" if task == "binary" else ("mart" if task == "multiclass" else "regression")
 
-    original_loss_file = os.path.join("loss_comp", construct_loss_filename(dataset_substring, method, task_type=task))
+    original_loss_file = os.path.join("../../loss_comp", construct_loss_filename(dataset_substring, method, task_type=task))
 
     output_lines = []
     output_lines.append("=" * 60)
@@ -69,7 +69,7 @@ def write_statistics(dataset_substring, dataset_task_map):
             else:
                 missing_files = []
                 if not os.path.exists(original_loss_file):
-                    missing_files.append("Original file missing")
+                    missing_files.append(f"Original file missing: {original_loss_file}")
                 if not os.path.exists(comp_loss_file):
                     missing_files.append(f"{influence_type} file missing")
                 results[influence_type] = " / ".join(missing_files)

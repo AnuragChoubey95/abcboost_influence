@@ -39,7 +39,7 @@ def process_boostin_scores(input_csv, column_index, output_file):
     ranked_indices = np.argsort(-column_values)
 
     # Save the ranked indices and their scores to the output file
-    with open("../../influence_scores/" + output_file, 'w') as f:
+    with open("../ranked/" + output_file, 'w') as f:
         f.write("RowIndex,ColumnValue\n")
         for index in ranked_indices:
             f.write(f"{index},{column_values[index]:.6f}\n")
@@ -52,7 +52,6 @@ def main():
 
     args = parser.parse_args()
 
-    # Generate the output filename based on the column index and input CSV content
     if "LCA" in args.input_csv:
         suffix = "_LCA"
     else:

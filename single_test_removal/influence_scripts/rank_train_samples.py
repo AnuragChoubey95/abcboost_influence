@@ -11,17 +11,14 @@ def process_infl_scores(input_csv, column_index, output_file):
         column_index (int): Index of the column to rank the rows by.
         output_file (str): Path to the output file for ranked indices and scores.
     """
-    file_path = os.path.join("../influence_scores/", input_csv)
+    file_path = os.path.join("", input_csv)
 
     try:
-        # Load CSV data and handle invalid/missing entries
         data = np.genfromtxt(file_path, delimiter=',', skip_header=0, dtype=float)
     
-        # Print the filename and dimensions
         print(f"Processing file: {file_path}")
         print(f"Data dimensions: {data.shape}")
     
-        # Print last column
         print("Last column:")
         print(data[:, -1])
 
@@ -31,23 +28,18 @@ def process_infl_scores(input_csv, column_index, output_file):
         print("Possible causes: missing/extra columns, incorrect delimiter, or corrupted file.")
         return  # Exit function to avoid further errors
 
-    # Check for invalid or missing data
     if np.isnan(data).any():
         print(f"Warning: Missing or invalid data found in {file_path}. Replacing NaNs with 0.")
         data = np.nan_to_num(data, nan=0.0)
 
-    # Ensure the column index is within range
     if column_index < 0 or column_index >= data.shape[1]:
         raise ValueError(f"Column index {column_index} is out of range. Valid range is 0 to {data.shape[1] - 1}.")
 
-    # Extract the specified column
     column_values = data[:, column_index]
 
-    # Rank rows based on most positive to most negative
     ranked_indices = np.argsort(-column_values)
 
-    # Save the ranked indices and their scores to the output file
-    output_path = os.path.join("../influence_scores/", output_file)
+    output_path = os.path.join("../ranked_rows/", output_file)
     with open(output_path, 'w') as f:
         f.write("RowIndex,ColumnValue\n")
         for index in ranked_indices:
@@ -64,14 +56,12 @@ def main():
 
     args = parser.parse_args()
 
-    # Generate the output filename based on the column index and input CSV content
     if "LCA" in args.input_csv:
         suffix = "_LCA"
     else:
         suffix = "_BoostIn"
     output_file = f"{args.output_prefix}_column_{args.column_index}{suffix}.csv"
 
-    # Process the BoostIn scores
     process_infl_scores(args.input_csv, args.column_index, output_file)
     print(f"Ranked rows by column {args.column_index} have been saved to {output_file}")
 

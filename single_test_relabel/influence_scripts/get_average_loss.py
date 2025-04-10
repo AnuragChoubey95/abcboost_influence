@@ -24,11 +24,11 @@ def preprocess_loss_directory(loss_dir, substring, task_type):
          }
     """
     unique_columns = set()
-    unique_percentages = set()  # <--- now starting as empty, discovered from filenames
+    unique_percentages = set()  
     loss_files = defaultdict(list)
 
     for file in os.listdir(loss_dir):
-        # We only consider CSV files containing the user-specified 'substring'
+        # Only consider CSV files containing the user-specified 'substring'
         if file.endswith(".csv") and substring in file:
             # 1) Identify the original file (task_type-based)
             if task_type == "regression":
@@ -41,13 +41,11 @@ def preprocess_loss_directory(loss_dir, substring, task_type):
                 if file == f"{substring}.train.csv_robustlogit_J20_v0.1.model_test_sample_losses.csv":
                     loss_files["original"].append(file)
 
-            # 2) Attempt to detect "columnXYZ" in the filename
             column_match = re.search(r"_column(\d+)", file)
             if column_match:
                 col_idx = int(column_match.group(1))
                 unique_columns.add(col_idx)
 
-            # 3) Attempt to detect "filtered_XX%" in the filename
             percentage_match = re.search(r"relabelled_(\d+(?:\.\d+)?)%", file)
             if percentage_match:
                 val = float(percentage_match.group(1))
@@ -62,7 +60,7 @@ def preprocess_loss_directory(loss_dir, substring, task_type):
     return unique_columns, unique_percentages, loss_files
 
 
-def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages,
+def compare_losses_and_rank(original_loss_dir, influence_loss_dir, unique_columns, unique_percentages,
                             loss_files, substring, task_type):
     """
     Loads the 'original' loss file (task_type determines naming),
@@ -83,11 +81,11 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages,
     else:
         original_loss_file = f"{substring}.train.csv_robustlogit_J20_v0.1.model_test_sample_losses.csv"
 
-    original_path = os.path.join(loss_dir, original_loss_file)
+    original_path = os.path.join(original_loss_dir, original_loss_file)
     print(f"Loading original loss file: {original_loss_file}")
     
     time.sleep(0.5)
-    original_data = np.loadtxt(os.path.join(loss_dir, original_loss_file), delimiter=',')
+    original_data = np.loadtxt(os.path.join(original_loss_dir, original_loss_file), delimiter=',')
     original_indices = original_data[:, 0]
     original_losses = original_data[:, 1]
 
@@ -105,7 +103,7 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages,
             print(f"  Processing percentage: {percentage}%")
             # time.sleep(0.5)
             for file in loss_files[method]:
-                # Ensure the file corresponds to the percentage
+                
                 percentage_str = f"relabelled_{percentage:.1f}%".rstrip(".0%")
                 if percentage_str not in file:
                     continue
@@ -116,30 +114,31 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages,
                     continue
                 column_index = int(column_match.group(1))
 
-                # Load the loss file
-                losses_data = np.loadtxt(os.path.join(loss_dir, file), delimiter=',')
-                losses_indices = losses_data[:, 0]
-                losses_values = losses_data[:, 1]
+               # Load the single-entry influence loss file
+                losses_data = np.loadtxt(os.path.join(influence_loss_dir, file), delimiter=',')
 
-                # Find the matching index in the original file
-                if column_index in losses_indices:
+                # losses_data is 1D: [index, loss]
+                column_idx_from_file, current_loss = losses_data
+
+                # Check consistency (optional safety check)
+                if column_index != int(column_idx_from_file):
+                    print(f"Warning: column index mismatch in file {file}: expected {column_index}, got {column_idx_from_file}")
+
+                    # Find the corresponding original loss
                     if column_index not in original_indices:
                         print(f"Error: Column index {column_index} not found in original indices.")
-                        # continue
-                    idx_in_original = np.where(original_indices == column_index)[0][0]
-                    idx_in_losses = np.where(losses_indices == column_index)[0][0]
+                        continue
 
+                    idx_in_original = np.where(original_indices == column_index)[0][0]
                     original_loss = original_losses[idx_in_original]
-                    current_loss = losses_values[idx_in_losses]
                     delta_loss = current_loss - original_loss
 
                     print(f"    Test Index: {column_index}")
                     print(f"      Original Loss: {original_loss:.15f}")
                     print(f"      Current Loss: {current_loss:.15f}")
                     print(f"      Delta Loss: {delta_loss:.15f}")
-                    # time.sleep(0.5)
 
-                    # Store the results
+                    # Store result
                     comparison_results[method][percentage].append(delta_loss)
 
     # Compute average increase in loss and rank the methods
@@ -152,7 +151,7 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages,
             avg_delta = np.mean(deltas) if deltas else 0
             avg_increase[method][percentage] = avg_delta
 
-    with open("../statistics.txt", "a") as f:  # Open the file in append mode
+    with open("../statistics.txt", "a") as f:  # append mode
         f.write(f"\nSubstring: {substring} || Sample Size of Test Indices: {len(unique_columns)}\n")
         print("\nRanking Methods by Average Loss Increase:")
         f.write("\nRanking Methods by Average Loss Increase:\n")
@@ -173,7 +172,7 @@ def compare_losses_and_rank(loss_dir, unique_columns, unique_percentages,
         f.write("\n-----------------------")
         print("\nFinal Rankings by Percentage:")
         f.write("\nFinal Rankings by Percentage:\n")
-        f.write(f"\nSubstring: {substring} || Sample Size of Test Indices: {len(unique_columns)}\n")  # Write the substring
+        f.write(f"\nSubstring: {substring} || Sample Size of Test Indices: {len(unique_columns)}\n")  #
         for rank in method_ranking:
             ranking_line = f"  Percentage {rank[0]}%: Best Method: {rank[1]}, Average Loss Increase: {rank[2]:.15f}"
             print(ranking_line)  # Print to console
@@ -191,12 +190,12 @@ def main():
     substring = args.substring
     task_type = args.task_type
     print(task_type)
-    # Directory containing your CSV loss files
-    loss_dir = os.path.join(os.path.dirname(__file__), "../loss_comp/")
+    original_loss_dir = os.path.join(os.path.dirname(__file__), "../../loss_comp/")
+    influence_loss_dir = os.path.join(os.path.dirname(__file__), "loss_comp/")
 
     # 1) Collect the columns, percentages, etc.
     unique_columns, unique_percentages, loss_files = preprocess_loss_directory(
-        loss_dir, substring, task_type
+        influence_loss_dir, substring, task_type
     )
 
     # 2) Print them out to verify
@@ -205,7 +204,7 @@ def main():
     time.sleep(0.5)
 
     # 3) Perform the actual comparisons
-    compare_losses_and_rank(loss_dir, unique_columns, unique_percentages,
+    compare_losses_and_rank(original_loss_dir, influence_loss_dir, unique_columns, unique_percentages,
                             loss_files, substring, task_type)
 
 
