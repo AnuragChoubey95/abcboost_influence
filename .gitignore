@@ -10,3 +10,4 @@ abcboost*
 *log
 *.prediction
 *.csv
+*.png
