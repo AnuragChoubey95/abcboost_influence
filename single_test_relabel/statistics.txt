@@ -299,3 +299,93 @@ Substring: spambase || Sample Size of Test Indices: 100
   Percentage 1.5%: Best Method: BoostIn, Average Loss Increase: 5.683492821052631
 
 --------------------------------------------------------------------------------------------
+Substring: no_show || Sample Size of Test Indices: 100
+
+Ranking Methods by Average Loss Increase:
+
+  Percentage 0.1%:
+    BoostIn Average Loss Increase: 0.446796170000000
+    LCA Average Loss Increase: 0.769855177083333
+  Percentage 1.5%:
+    BoostIn Average Loss Increase: 3.658074546391753
+    LCA Average Loss Increase: 6.697326826530612
+  Percentage 2.0%:
+    BoostIn Average Loss Increase: 4.108455938144330
+    LCA Average Loss Increase: 7.819558818181818
+  Percentage 1.0%:
+    BoostIn Average Loss Increase: 3.313956815384616
+    LCA Average Loss Increase: 6.046585661616162
+  Percentage 0.5%:
+    BoostIn Average Loss Increase: 1.996843561224490
+    LCA Average Loss Increase: 2.918975311827956
+-----------------------
+Final Rankings by Percentage:
+
+Substring: no_show || Sample Size of Test Indices: 100
+  Percentage 0.1%: Best Method: LCA, Average Loss Increase: 0.769855177083333
+  Percentage 1.5%: Best Method: LCA, Average Loss Increase: 6.697326826530612
+  Percentage 2.0%: Best Method: LCA, Average Loss Increase: 7.819558818181818
+  Percentage 1.0%: Best Method: LCA, Average Loss Increase: 6.046585661616162
+  Percentage 0.5%: Best Method: LCA, Average Loss Increase: 2.918975311827956
+
+--------------------------------------------------------------------------------------------
+Substring: diabetes || Sample Size of Test Indices: 100
+
+Ranking Methods by Average Loss Increase:
+
+  Percentage 0.1%:
+    BoostIn Average Loss Increase: 0.161000397260274
+    LCA Average Loss Increase: 0.291131560000000
+  Percentage 1.0%:
+    BoostIn Average Loss Increase: 1.882112335294118
+    LCA Average Loss Increase: 3.307534154320988
+  Percentage 2.0%:
+    BoostIn Average Loss Increase: 2.077328208333334
+    LCA Average Loss Increase: 3.595443793814433
+  Percentage 0.5%:
+    BoostIn Average Loss Increase: 1.318128162790698
+    LCA Average Loss Increase: 2.165612380952381
+  Percentage 1.5%:
+    BoostIn Average Loss Increase: 1.953763122222222
+    LCA Average Loss Increase: 3.672838252747254
+-----------------------
+Final Rankings by Percentage:
+
+Substring: diabetes || Sample Size of Test Indices: 100
+  Percentage 0.1%: Best Method: LCA, Average Loss Increase: 0.291131560000000
+  Percentage 1.0%: Best Method: LCA, Average Loss Increase: 3.307534154320988
+  Percentage 2.0%: Best Method: LCA, Average Loss Increase: 3.595443793814433
+  Percentage 0.5%: Best Method: LCA, Average Loss Increase: 2.165612380952381
+  Percentage 1.5%: Best Method: LCA, Average Loss Increase: 3.672838252747254
+
+--------------------------------------------------------------------------------------------
+Substring: dry_bean || Sample Size of Test Indices: 100
+
+Ranking Methods by Average Loss Increase:
+
+  Percentage 0.5%:
+    BoostIn Average Loss Increase: 0.002401440000000
+    LCA Average Loss Increase: -0.024112704081633
+  Percentage 1.5%:
+    BoostIn Average Loss Increase: 0.121582530000000
+    LCA Average Loss Increase: 0.528900930000000
+  Percentage 2.0%:
+    BoostIn Average Loss Increase: 0.327014580000000
+    LCA Average Loss Increase: 0.240363690000000
+  Percentage 0.1%:
+    BoostIn Average Loss Increase: 0.052183424242424
+    LCA Average Loss Increase: -0.205359671641791
+  Percentage 1.0%:
+    BoostIn Average Loss Increase: 0.112003440000000
+    LCA Average Loss Increase: 0.370231980000000
+-----------------------
+Final Rankings by Percentage:
+
+Substring: dry_bean || Sample Size of Test Indices: 100
+  Percentage 0.5%: Best Method: BoostIn, Average Loss Increase: 0.002401440000000
+  Percentage 1.5%: Best Method: LCA, Average Loss Increase: 0.528900930000000
+  Percentage 2.0%: Best Method: BoostIn, Average Loss Increase: 0.327014580000000
+  Percentage 0.1%: Best Method: BoostIn, Average Loss Increase: 0.052183424242424
+  Percentage 1.0%: Best Method: LCA, Average Loss Increase: 0.370231980000000
+
+--------------------------------------------------------------------------------------------

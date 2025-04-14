@@ -61,7 +61,7 @@ def rank_training_data():
          - Load mislabelled data from ../mislabelled_train_data/{dataset}_mislabel.train.csv
          - Insert rank column, then save to ../ranked_training/{dataset}_{method_type}_{original|mislabel}_ranked.csv
     """
-    influence_dir = os.path.join("..", "..", "mislabel_influence_scores")
+    influence_dir = os.path.join("influence_scores")
     data_dir = os.path.join("..", "..", "data")
     mislabel_dir = os.path.join("..", "mislabelled_train_data")
     output_dir = os.path.join("..", "ranked_training")

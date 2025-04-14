@@ -260,7 +260,7 @@ void GradientBoosting::init() {
   hist.resize(n_nodes);
   for (int i = 0; i < n_nodes; ++i) {
     hist[i].resize(data->data_header.n_feats);
-#pragma omp parallel for schedule(guided)
+    #pragma omp parallel for schedule(guided)
     for (unsigned int j = 0; j < data->data_header.n_feats; ++j) {
       hist[i][j].resize(data->data_header.n_bins_per_f[j]);
     }
@@ -284,7 +284,7 @@ void GradientBoosting::init() {
   H_tmp.resize(data->n_data);
   ids_tmp.resize(data->n_data);
   this->test_sample_losses.resize(data->n_data); //<<++ MY CHANGE
-  this->custom_tests_path = "single_test_relabel"; //<<WRITE LOSS HERE FOR EXP TYPE
+  this->custom_tests_path = "multi_test_relabel"; //<<WRITE LOSS HERE FOR EXP TYPE
 }
 
 /**
@@ -760,7 +760,7 @@ void Regression::test() {
   int n_testing = data->n_data; // Number of test samples
 
   bool getInfluence = false; //Flag: Compute Influence?
-  InfluenceType inf = InfluenceType::BOOST_IN_LCA; //What method of influence?
+  InfluenceType inf = InfluenceType::BOOST_IN; //What method of influence?
   
   std::vector<std::vector<double>> influenceMatrix(
       n_training,

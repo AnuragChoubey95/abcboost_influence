@@ -49,7 +49,7 @@ def write_statistics(dataset_substring, dataset_task_map):
 
     method = "robustlogit" if task == "binary" else ("mart" if task == "multiclass" else "regression")
 
-    original_loss_file = os.path.join("../../loss_comp", construct_loss_filename(dataset_substring, method, task_type=task))
+    original_loss_file = os.path.join("loss_comp", construct_loss_filename(dataset_substring, method, task_type=task))
 
     output_lines = []
     output_lines.append("=" * 60)
