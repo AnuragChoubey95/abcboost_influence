@@ -124,6 +124,17 @@ def plot_composite_bar_chart(avg_boostin, avg_lca, out_file="composite_relabel_b
     Creates a single grouped bar chart for all percentages, with two bars
     (BoostIn, LCA) per percentage. Saves the figure as out_file.
     """
+
+    sz = 9
+    # Set global font sizes
+    plt.rcParams.update({
+        'font.size': 16+sz,
+        'axes.titlesize': 20,
+        'axes.labelsize': 22,
+        'xtick.labelsize': 13+sz,
+        'ytick.labelsize': 13+sz,
+        'legend.fontsize': 16,
+    })
     # We'll rely on the standard percentages in ascending order
     all_percentages = ["0.1%", "0.5%", "1.0%", "1.5%", "2.0%"]
 
@@ -140,7 +151,7 @@ def plot_composite_bar_chart(avg_boostin, avg_lca, out_file="composite_relabel_b
     x_positions = np.arange(len(filtered_percs))
     bar_width   = 0.4
 
-    fig, ax = plt.subplots(figsize=(7,4))
+    fig, ax = plt.subplots(figsize=(9, 5))
 
     ax.bar(x_positions - bar_width/2, boostin_vals, 
            bar_width, label="BoostIn")
@@ -149,12 +160,13 @@ def plot_composite_bar_chart(avg_boostin, avg_lca, out_file="composite_relabel_b
 
     ax.set_xticks(x_positions)
     ax.set_xticklabels(filtered_percs)
-    ax.set_ylabel("Average Loss Increase (Across All Datasets)")
+    ax.set_ylabel("Average Loss Increase")
     ax.set_title("Composite Single-Test Relabel Results")
     ax.axhline(0, color='gray', linewidth=0.8)
     ax.legend()
 
-    fig.tight_layout()
+    fig.subplots_adjust(left=0.17, right=0.97, top=0.88, bottom=0.15)
+
     plt.savefig(out_file, dpi=150)
     plt.close(fig)
 

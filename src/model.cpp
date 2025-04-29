@@ -284,7 +284,7 @@ void GradientBoosting::init() {
   H_tmp.resize(data->n_data);
   ids_tmp.resize(data->n_data);
   this->test_sample_losses.resize(data->n_data); //<<++ MY CHANGE
-  this->custom_tests_path = "multi_test_relabel"; //<<WRITE LOSS HERE FOR EXP TYPE
+  this->custom_tests_path = ""; //<<WRITE LOSS HERE FOR EXP TYPE
 }
 
 /**
@@ -759,7 +759,7 @@ void Regression::test() {
   int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
   int n_testing = data->n_data; // Number of test samples
 
-  bool getInfluence = false; //Flag: Compute Influence?
+  bool getInfluence = true; //Flag: Compute Influence?
   InfluenceType inf = InfluenceType::BOOST_IN; //What method of influence?
   
   std::vector<std::vector<double>> influenceMatrix(
@@ -893,9 +893,7 @@ void Regression::calculateBoostInInfluence(
   double dL_dy_hat = 2.0 * residual_test;
   double dTheta_dWi = additive_trees[t][0]->computeThetaDerivative(train_index, test_index);
   double eta = config->model_shrinkage;
-
-  // Update BoostIn influence matrix
-  (*influenceMatrix)[train_index][test_index] += dL_dy_hat * eta * dTheta_dWi;
+    (*influenceMatrix)[train_index][test_index] += dL_dy_hat * eta * dTheta_dWi;
 }
 
 
@@ -922,7 +920,6 @@ void Regression::calculateBoostInInfluence_LCA(
   double dTheta_dWi = additive_trees[t][0]->computeThetaDerivative_LCA(train_index, lcaNodeIdx);
   double eta = config->model_shrinkage;
 
-  // Update BoostIn influence matrix
   (*boostInMatrix_LCA)[train_index][test_index] += lcaNodeWt * dL_dy_hat * eta * dTheta_dWi;
 }
 
@@ -1153,7 +1150,7 @@ void BinaryMart::test() {
   int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples
   int n_testing = data->n_data; // Number of test samples
 
-  bool getInfluence = false; //Flag: Compute Influence?
+  bool getInfluence = true; //Flag: Compute Influence?
 
   InfluenceType inf = InfluenceType::BOOST_IN; //What method of influence?
   
@@ -1510,7 +1507,7 @@ void Mart::test() {
     }
   }
 
-  bool getInfluence = false; // Flag: Compute Influence?
+  bool getInfluence = true; // Flag: Compute Influence?
 
   if (getInfluence) {
     int n_training = additive_trees[0][0]->train_leaf_indices.size(); // Number of training samples

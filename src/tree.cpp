@@ -310,12 +310,12 @@ void Tree::buildTree(std::vector<uint> *ids, std::vector<uint> *fids) {
     }
     split(idx, l);
     // Calculate the depth of the new nodes
-    nodes[l].depth = nodes[idx].depth + 1; //<<++ MY CHANGE
-    nodes[r].depth = nodes[idx].depth + 1; //<<++ MY CHANGE
+    nodes[l].depth = nodes[idx].depth + 1; 
+    nodes[r].depth = nodes[idx].depth + 1; 
 
     // Update the maximum tree depth
-    treeDepth = std::max(treeDepth, nodes[l].depth); //<<++ MY CHANGE
-    treeDepth = std::max(treeDepth, nodes[r].depth); //<<++ MY CHANGE
+    treeDepth = std::max(treeDepth, nodes[l].depth); 
+    treeDepth = std::max(treeDepth, nodes[r].depth); 
     lsz = nodes[l].end - nodes[l].start, rsz = nodes[r].end - nodes[r].start;
 
     if (lsz < msz && rsz < msz) {
@@ -521,20 +521,20 @@ void Tree::populateTree(FILE *fileptr) {
   if (n_nodes > 0){
     ret += fread(&exp_sum, sizeof(exp_sum), 1, fileptr);
 
-    int train_leaf_indices_size = 0; //<<++MY CHANGE
-    ret += fread(&train_leaf_indices_size, sizeof(train_leaf_indices_size), 1, fileptr); //<<++MY CHANGE
-    train_leaf_indices.resize(train_leaf_indices_size); //<<++MY CHANGE
-    ret += fread(train_leaf_indices.data(), sizeof(int), train_leaf_indices_size, fileptr); //<<++MY CHANGE
+    int train_leaf_indices_size = 0; 
+    ret += fread(&train_leaf_indices_size, sizeof(train_leaf_indices_size), 1, fileptr); 
+    train_leaf_indices.resize(train_leaf_indices_size); 
+    ret += fread(train_leaf_indices.data(), sizeof(int), train_leaf_indices_size, fileptr); 
 
-    int train_sample_residuals_size = 0; //<<++MY CHANGE
-    ret += fread(&train_sample_residuals_size, sizeof(train_sample_residuals_size), 1, fileptr); //<<++MY CHANGE
-    train_sample_residuals.resize(train_sample_residuals_size); //<<++MY CHANGE
-    ret += fread(train_sample_residuals.data(), sizeof(double), train_sample_residuals_size, fileptr); //<<++MY CHANGE
+    int train_sample_residuals_size = 0; 
+    ret += fread(&train_sample_residuals_size, sizeof(train_sample_residuals_size), 1, fileptr); 
+    train_sample_residuals.resize(train_sample_residuals_size); 
+    ret += fread(train_sample_residuals.data(), sizeof(double), train_sample_residuals_size, fileptr); 
 
-    int train_sample_hessians_size = 0; //<<++MY CHANGE
-    ret += fread(&train_sample_hessians_size, sizeof(train_sample_hessians_size), 1, fileptr); //<<++MY CHANGE
-    train_sample_hessians.resize(train_sample_hessians_size); //<<++MY CHANGE
-    ret += fread(train_sample_hessians.data(), sizeof(double), train_sample_hessians_size, fileptr); //<<++MY CHANGE
+    int train_sample_hessians_size = 0; 
+    ret += fread(&train_sample_hessians_size, sizeof(train_sample_hessians_size), 1, fileptr); 
+    train_sample_hessians.resize(train_sample_hessians_size); 
+    ret += fread(train_sample_hessians.data(), sizeof(double), train_sample_hessians_size, fileptr); 
 
     // std::cout << "Train leaf indices size: " << train_leaf_indices_size << std::endl;
     // std::cout << "Train sample residuals size: " << train_sample_residuals_size << std::endl;
@@ -542,9 +542,9 @@ void Tree::populateTree(FILE *fileptr) {
     // std::cout << "\n";
 
     // Assert correctness of loaded sizes
-    assert(train_leaf_indices_size == train_sample_residuals_size && //<<++MY CHANGE
-          train_sample_residuals_size == train_sample_hessians_size && //<<++MY CHANGE
-          "Mismatch in sizes of loaded sample-related data structures!"); //<<++MY CHANGE
+    assert(train_leaf_indices_size == train_sample_residuals_size && 
+          train_sample_residuals_size == train_sample_hessians_size && 
+          "Mismatch in sizes of loaded sample-related data structures!"); 
   }
 }
 
@@ -580,7 +580,7 @@ std::vector<double> Tree::predictAll(Data *data) {
   this->data = data;
   uint n_test = data->n_data;
 
-  this->test_leaf_indices.resize(n_test, -1);  //<<++MY CHANGE
+  this->test_leaf_indices.resize(n_test, -1);  
   std::unordered_set<int> unique_leaf_indices; // For assertion
 
   // initialize ids
@@ -607,7 +607,7 @@ std::vector<double> Tree::predictAll(Data *data) {
         config->use_omp == true,
         for (int i = start; i < end; ++i) { 
             result[this->ids[i]] = nodes[lfid].predict_v;
-            this->test_leaf_indices[this->ids[i]] = lfid; // Update test leaf indices //<<++MY CHANGE
+            this->test_leaf_indices[this->ids[i]] = lfid; // Update test leaf indices 
         }
     )
     unique_leaf_indices.insert(lfid); // Track unique leaf indices
@@ -626,14 +626,14 @@ std::vector<double> Tree::predictAll(Data *data) {
  */
 void Tree::regress() {
 
-  this->train_leaf_indices.resize(data->n_data, -1);  //<<++MY CHANGE
-  this->train_sample_residuals.resize(data->n_data, 0.0);   //<<++MY CHANGE
-  this->train_sample_hessians.resize(data->n_data, 0.0);    //<<++MY CHANGE
+  this->train_leaf_indices.resize(data->n_data, -1);  
+  this->train_sample_residuals.resize(data->n_data, 0.0);   
+  this->train_sample_hessians.resize(data->n_data, 0.0);    
 
    // Assert correctness of initialized sizes
-  assert(train_leaf_indices.size() == train_sample_residuals.size() && //<<++MY CHANGE
-         train_sample_residuals.size() == train_sample_hessians.size() && //<<++MY CHANGE
-         "Mismatch in sizes of initialized sample-related data structures!"); //<<++MY CHANGE
+  assert(train_leaf_indices.size() == train_sample_residuals.size() && 
+         train_sample_residuals.size() == train_sample_hessians.size() && 
+         "Mismatch in sizes of initialized sample-related data structures!"); 
 
   double correction = 1.0;
   if (data->data_header.n_classes != 1 && config->model_name.size() >= 3 &&
@@ -657,16 +657,16 @@ void Tree::regress() {
           numerator += R[id];
           denominator += H[id];
           // Ensure the current node is a leaf before assigning it to the sample
-          if (nodes[i].is_leaf) { //<<++MY CHANGE
-            this->train_leaf_indices[id] = i;   // Assign the current node index as the leaf for this sample //<<++MY CHANGE
-            this->train_sample_residuals[id] = R[id]; // Store the residual for this sample //<<++MY CHANGE
-            this->train_sample_hessians[id] = H[id];  // Store the hessian for this sample //<<++MY CHANGE
+          if (nodes[i].is_leaf) { 
+            this->train_leaf_indices[id] = i;   // Assign the current node index as the leaf for this sample 
+            this->train_sample_residuals[id] = R[id]; // Store the residual for this sample 
+            this->train_sample_hessians[id] = H[id];  // Store the hessian for this sample 
           }
         }
       )
-      nodes[i].sum_residuals = numerator; //<<++MY CHANGE
-      nodes[i].sum_hessians = denominator; //<<++MY CHANGE
-      assert(nodes[i].sum_hessians >= 0 && "Node sum_hessians must be non-negative!"); //<<++MY CHANGE
+      nodes[i].sum_residuals = numerator; 
+      nodes[i].sum_hessians = denominator; 
+      assert(nodes[i].sum_hessians >= 0 && "Node sum_hessians must be non-negative!"); 
 
       nodes[i].predict_v =
           std::min(std::max(correction * numerator /
@@ -703,25 +703,25 @@ void Tree::saveTree(FILE *fp) {
 
   fwrite(&exp_sum, sizeof(exp_sum), 1, fp);
 
-  int train_leaf_indices_size = train_leaf_indices.size(); //<<++ MY CHANGE
-  fwrite(&train_leaf_indices_size, sizeof(train_leaf_indices_size), 1, fp); //<<++ MY CHANGE
+  int train_leaf_indices_size = train_leaf_indices.size(); 
+  fwrite(&train_leaf_indices_size, sizeof(train_leaf_indices_size), 1, fp); 
 
-  fwrite(train_leaf_indices.data(), sizeof(int), train_leaf_indices_size, fp); //<<++ MY CHANGE
+  fwrite(train_leaf_indices.data(), sizeof(int), train_leaf_indices_size, fp); 
 
-  int train_sample_residuals_size = train_sample_residuals.size(); //<<++ MY CHANGE
-  fwrite(&train_sample_residuals_size, sizeof(train_sample_residuals_size), 1, fp); //<<++ MY CHANGE
+  int train_sample_residuals_size = train_sample_residuals.size(); 
+  fwrite(&train_sample_residuals_size, sizeof(train_sample_residuals_size), 1, fp); 
 
-  fwrite(train_sample_residuals.data(), sizeof(double), train_sample_residuals_size, fp); //<<++ MY CHANGE
+  fwrite(train_sample_residuals.data(), sizeof(double), train_sample_residuals_size, fp); 
 
-  int train_sample_hessians_size = train_sample_hessians.size(); //<<++ MY CHANGE
-  fwrite(&train_sample_hessians_size, sizeof(train_sample_hessians_size), 1, fp); //<<++ MY CHANGE
+  int train_sample_hessians_size = train_sample_hessians.size(); 
+  fwrite(&train_sample_hessians_size, sizeof(train_sample_hessians_size), 1, fp); 
 
-  fwrite(train_sample_hessians.data(), sizeof(double), train_sample_hessians_size, fp); //<<++ MY CHANGE
+  fwrite(train_sample_hessians.data(), sizeof(double), train_sample_hessians_size, fp); 
 
-  // Assert correctness of saved sizes
-  assert(train_leaf_indices_size == train_sample_residuals_size && //<<++MY CHANGE
-         train_sample_residuals_size == train_sample_hessians_size && //<<++MY CHANGE
-         "Mismatch in sizes of saved sample-related data structures!"); //<<++MY CHANGE
+  // Correctness of saved sizes
+  assert(train_leaf_indices_size == train_sample_residuals_size && 
+         train_sample_residuals_size == train_sample_hessians_size && 
+         "Mismatch in sizes of saved sample-related data structures!"); 
 }
 
 
@@ -873,11 +873,7 @@ void Tree::split(int x, int l) {
     nodes[x].split_v = best_info.split_v;
   }
 
-  /**
-   * Get the leaf index for a given sample index.
-   * @param[in] test_idx: Index of the sample in the dataset.
-   * @return Index of the leaf node where the sample falls.
-   */
+  
   int Tree::getLeafIndex(int idx) {
       int node_index = 0; // Start at the root node
       while (true) {
@@ -894,26 +890,18 @@ void Tree::split(int x, int l) {
       }
   }
 
-  /**
-   * Compute the derivative of the leaf value θ_{t,l} with respect to w_i.
-   * @param[in] train_idx: Index of the training sample.
-   * @param[in] test_idx: Index of the test sample.
-   * @return The computed derivative ∂θ_{t,l}/∂w_i.
-  */
+  
   double Tree::computeThetaDerivative(int train_idx, int test_idx) {
     // Get leaf index for the test sample
     int leaf_idx = this->test_leaf_indices[test_idx];
 
-    // Access the gradient, hessian, and leaf value for the training sample
     double g_t_i = this->train_sample_residuals[train_idx];
     double h_t_i = this->train_sample_hessians[train_idx];
     double theta_t_l = nodes[leaf_idx].predict_v;
 
-    // Compute ∑_{j  ∈ I_{t,l}} h_{t,j} + λ
     double sum_h_t_j = nodes[leaf_idx].sum_hessians;
     sum_h_t_j += config->tree_damping_factor; // Regularization term λ
 
-    // Compute the derivative ∂θ_{t,l}/∂w_i
     double derivative = (g_t_i + h_t_i * theta_t_l) / sum_h_t_j;
 
     return derivative;
@@ -923,35 +911,26 @@ void Tree::split(int x, int l) {
   double Tree::computeThetaDerivative_LCA(int train_idx, int lca_node_idx) {
       int train_leaf_idx = this->train_leaf_indices[train_idx];
 
-      // Access the gradient, hessian for the training sample and leaf value of LCA
       double g_t_i = this->train_sample_residuals[train_idx];
       double h_t_i = this->train_sample_hessians[train_idx];
       double theta_t_l = nodes[lca_node_idx].predict_v;
 
-      // Compute ∑_{j  ∈ I_{t,l}} h_{t,j} + λ
       double sum_h_t_j = nodes[lca_node_idx].sum_hessians;
       sum_h_t_j += config->tree_damping_factor; // Regularization term λ
 
-      // Compute the derivative ∂θ_{t,l}/∂w_i
       double derivative = (g_t_i + h_t_i * theta_t_l) / sum_h_t_j;
 
       return derivative;
   }
 
 
-  /**
-   * Calculate the Lowest Common Ancestor (LCA) of two nodes.
-   * @param[in] node1: Index of the first node
-   * @param[in] node2: Index of the second node
-   * @return Index of the LCA node
-   */
-  int Tree::findLCA(int node1, int node2) { //<<++MY CHANGE
+  
+  int Tree::findLCA(int node1, int node2) { 
       // Assert that the node indices are valid
       assert(node1 >= 0 && node2 >= 0 && "Invalid node indices: Indices cannot be negative.");
       assert(node1 < nodes.size() && node2 < nodes.size() && "Invalid node indices: Indices out of bounds.");
 
 
-      // Step 1: Trace the path to the root for node1
       std::unordered_set<int> ancestors;
       int current = node1;
       while (current != -1) {  // Root node has parent == -1
@@ -959,7 +938,6 @@ void Tree::split(int x, int l) {
           current = nodes[current].parent;
       }
 
-      // Step 2: Trace the path to the root for node2 and find the first common ancestor
       current = node2;
       while (current != -1) {
           if (ancestors.count(current)) {
@@ -971,12 +949,8 @@ void Tree::split(int x, int l) {
       return -1;  // LCA not found (should not happen if the tree is valid)
   }
 
-  /**
-   * Calculate the depth weight of a node.
-   * @param[in] node_idx: Index of the node
-   * @return Depth weight of the node
-   */
-  double Tree::calculateDepthWeight(int node_idx) { //<<++MY CHANGE
+  
+  double Tree::calculateDepthWeight(int node_idx) { 
       if (node_idx < 0 || node_idx >= nodes.size()) {
           fprintf(stderr, "[Error] Invalid node index provided.\n");
           return 0.0;

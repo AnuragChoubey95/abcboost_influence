@@ -86,6 +86,17 @@ def plot_relabel_bars(data_dict, outdir='charts'):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
+    sz = 9
+    # Set global font sizes
+    plt.rcParams.update({
+        'font.size': 16+sz,
+        'axes.titlesize': 20,
+        'axes.labelsize': 22,
+        'xtick.labelsize': 13+sz,
+        'ytick.labelsize': 13+sz,
+        'legend.fontsize': 16,
+    })
+
     # For consistent ordering of percentages
     all_percentages = ["0.1%", "0.5%", "1.0%", "1.5%", "2.0%"]
 
@@ -121,7 +132,9 @@ def plot_relabel_bars(data_dict, outdir='charts'):
         ax.axhline(0, color='gray', linewidth=0.8)
 
         ax.legend()
-        fig.tight_layout()
+        # Use same padding as composite chart
+        fig.subplots_adjust(left=0.17, right=0.97, top=0.88, bottom=0.15)
+
 
         outpath = os.path.join(outdir, f"{dataset_name.strip()}_relabel_bar.png")
         plt.savefig(outpath, dpi=150)
